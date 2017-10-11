@@ -1,4 +1,4 @@
-/* 
+/*
 File: lab4b_app.c
 Revision date: 23 December 2003
 Description: Application code for EE 425 lab 4B (Kernel essentials B)
@@ -18,17 +18,25 @@ int CStk[CSTACKSIZE];
 void ATask(void);               /* Function prototypes for task code */
 void BTask(void);
 void CTask(void);
-
+/*
 void main(void)
 {
     YKInitialize();
-    
+
     printString("Creating task A...\n");
     YKNewTask(ATask, (void *)&AStk[ASTACKSIZE], 5);
-    
+
     printString("Starting kernel...\n");
     YKRun();
 }
+*/
+
+//TEST MAIN
+void main()
+{
+	YKInitialize();
+}
+
 
 void ATask(void)
 {
@@ -69,4 +77,3 @@ void CTask(void)
         for(count = 0; count < 5000; count++);
     }
 }
-

@@ -37,6 +37,88 @@ void exit(unsigned char code);
 void signalEOI(void);
 # 8 "lab4b_app.c" 2
 # 1 "yakk.h" 1
+# 1 "linkedList.h" 1
+# 1 "yaku.h" 1
+# 2 "linkedList.h" 2
+
+typedef enum task_state_type {ready, running, suspended} task_state;
+
+typedef struct context_type
+{
+ unsigned int sp;
+ unsigned int ip;
+ task_state_type state;
+ unsigned int ax;
+ unsigned int bx;
+ unsigned int cx;
+ unsigned int dx;
+ unsigned int si;
+ unsigned int di;
+ unsigned int bp;
+ unsigned int es;
+ unsigned int ds;
+ unsigned int IF;
+} context;
+
+extern typedef struct taskblock *TCBptr;
+
+TCBptr createTCB(void *stackptr, int priority, context_type context);
+
+void insertTCBIntoRdyList(TCBptr tcb);
+
+void removeFirstTCBFromRdyList();
+
+
+
+
+
+void moveTCBToRdyList(TCBptr tmp);
+
+
+void printTCBs();
+void printLists();
+# 2 "yakk.h" 2
+
+
+
+
+
+extern unsigned int YKCtxSwCount;
+extern unsigned int YKIdleCount;
+extern unsigned int YKTickNum;
+
+void IdleTask();
+int IdleStk[256];
+
+
+void YKInitialize(void);
+
+void YKEnterMutex(void);
+
+void YKExitMutex(void);
+
+YKIdleTask(void);
+
+void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);
+
+void YKRun(void);
+
+void YKDelayTask(unsigned count);
+
+void YKEnterISR(void);
+
+YKExitISR(void);
+
+YKScheduler(void);
+
+void YKDispatcher(void);
+
+void YKTickHandler(void);
+
+
+
+
+void printDebug();
 # 9 "lab4b_app.c" 2
 
 
@@ -50,17 +132,12 @@ int CStk[256];
 void ATask(void);
 void BTask(void);
 void CTask(void);
-
-void main(void)
+# 35 "lab4b_app.c"
+void main()
 {
-    YKInitialize();
-
-    printString("Creating task A...\n");
-    YKNewTask(ATask, (void *)&AStk[256], 5);
-
-    printString("Starting kernel...\n");
-    YKRun();
+ YKInitialize();
 }
+
 
 void ATask(void)
 {
