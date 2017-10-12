@@ -35,6 +35,10 @@ void main(void)
 void main()
 {
 	YKInitialize();
+    //YKNewTask(ATask, (void *)&AStk[ASTACKSIZE], 101);
+    //TCBptr createTCB(void *stackptr, int priority, struct context_type context)
+
+    //TCBptr task0 = createTCB((void *) &AStk[ASTACKSIZE], 9, initContext);
 }
 
 

@@ -1,11 +1,30 @@
 #include "yakk.h"
+#include "clib.h"
 
 unsigned int YKIdleCount = 0;
 static int running_flag = 0; //0 means not running, 1 means running
 unsigned int ISRCallDepth = 0;
-static TCBptr lastRunTask = NULL;
+static TCBptr lastRunTask = NULL; 
 unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
+
+
+//ARE THESE THE VALUES WE WANT?
+struct context_type initContext = {
+	0, //sp //this should be the bottom of the task's stack
+	0, //ip //this should be the function pointer value
+//	ready, //ready
+	0, //ax  
+	0, //bx  
+	0, //cx
+	0, //dx
+	0, //si
+	0, //di
+	0, //bp //this should also be the stack
+	0, //es
+	0, //ds
+	1 //IF
+};
 
 void YKInitialize(void)
 {
@@ -26,22 +45,6 @@ void YKIdleTask(void)
 	//should take 4 instructions. //NEED TO VERIFY
 }
 
-//ARE THESE THE VALUES WE WANT?
-struct context_type initContext = {
-	0, //sp //this should be the bottom of the task's stack
-	0, //ip //this should be the function pointer value
-//	ready, //ready
-	0, //ax  
-	0, //bx  
-	0, //cx
-	0, //dx
-	0, //si
-	0, //di
-	0, //bp //this should also be the stack
-	0, //es
-	0, //ds
-	1 //IF
-};
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority)
 {
@@ -53,6 +56,7 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority)
 
 	TCBptr newTCB = createTCB(taskStack, priority, initContext);
 	insertTCBIntoRdyList(newTCB); //do we start all tasks as ready?? //TODO
+	printString("Starting new task.\n\r");
 	printTCBs(); //test
 	printLists(); //test
 	if (running_flag)

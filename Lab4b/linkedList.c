@@ -14,6 +14,7 @@ TCBptr createTCB(void *stackptr, int priority, struct context_type context)
 	TCBarray[currentListSize].stackptr = stackptr;
 	TCBarray[currentListSize].priority = priority;
 	TCBarray[currentListSize].context = context;
+	TCBarray[currentListSize].ID = currentListSize;
 	currentListSize++;
 	return &(TCBarray[currentListSize-1]);
 }
@@ -61,7 +62,7 @@ void removeFirstTCBFromRdyList() //removes the top TCB from ready list and puts 
        be moved. */
 void moveTCBToRdyList(TCBptr tmp)
 {
-		TCBptr tmp2;
+	TCBptr tmp2;
 
     if (tmp->prev == NULL)	/* fix up suspended list */
 			YKSuspList = tmp->next;
@@ -127,10 +128,12 @@ void printContext(struct context_type c)
 	printString("\n\n");
 }
 
-unsigned int IF;
+unsigned int IF; //TODO: what is this?
 void printTCB(TCBptr t)
 {
-	printString(":  Priority: ");
+	printString("  ID: ");
+	printInt(t->ID);
+	printString("\n  Priority: ");
 	printInt(t->priority);
 	printContext(t->context);
 }
@@ -150,7 +153,7 @@ void printLists()
 {
 	//print ready list
 	TCBptr tmp = YKRdyList;
-	printString("Running list: \n");
+	printString("Ready list: \n");
 	while (tmp != NULL)
 	{
 		printTCB(tmp);
@@ -159,7 +162,7 @@ void printLists()
 
 	//print suspended list
 	tmp = YKSuspList;
-	printString("Running list: \n");
+	printString("Suspended list: \n");
 	while (tmp != NULL)
 	{
 		printTCB(tmp);

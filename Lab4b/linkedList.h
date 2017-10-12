@@ -24,7 +24,7 @@ struct context_type //12 16-bit values = 24 bytes
 
 typedef struct taskblock *TCBptr;
 //typedef struct taskblock *TCBptr;
-typedef struct taskblock //
+typedef struct taskblock //36 bytes in total (24<-context + 12<-other stuff)
 {
 	struct context_type context;
 	void *stackptr;
@@ -32,6 +32,7 @@ typedef struct taskblock //
 	int delay;
 	TCBptr next;
 	TCBptr prev;
+	unsigned ID;
 } TCB;
 
 static TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)

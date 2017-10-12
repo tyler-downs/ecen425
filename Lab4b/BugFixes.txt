@@ -1,0 +1,1 @@
+We had a bug with our typedef enums. With this compiler we had to take off the typedef part, and when we wanted to use that enum elsewhere in the code we had to use the word enum.
