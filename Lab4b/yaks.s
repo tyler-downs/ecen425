@@ -10,7 +10,7 @@ YKDispatcher:
   ;save context of current task into its TCB
   ;restore context of new task into registers
   ;restore ip of new task, which will send us to the new task
-  mov [YKRdyList], sp
+  mov [lastRunTask], sp
   mov [YKRdyList+2], ip
   mov [YKRdyList+4], ax
   mov [YKRdyList+6], bx
