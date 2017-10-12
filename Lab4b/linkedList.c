@@ -2,6 +2,8 @@
 #include "clib.h"
 
 static unsigned currentListSize = 0;
+TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
+TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
 
 struct taskblock TCBarray[MAX_NUM_TASKS + 1]; //plus one for idle task
 
@@ -37,10 +39,10 @@ void insertTCBIntoRdyList(TCBptr tcb) //inserts the TCB into the ready list
 		if (tmp->prev == NULL) //insert before tmp
 			YKRdyList = tcb;
 		else
-			tmp->prev->next = tmp;
+			tmp->prev->next = tcb;
 		tcb->prev = tmp->prev;
 		tcb->next = tmp;
-		tmp->prev = tmp;
+		tmp->prev = tcb;
 	}
 }
 
@@ -123,12 +125,12 @@ void printContext(struct context_type c)
 	printInt(c.es);
 	printString("\n  ds: ");
 	printInt(c.ds);
-	printString("\n  IF: ");
-	printInt(c.IF);
+	printString("\n  flags: ");
+	printInt(c.flags);
 	printString("\n\n");
 }
 
-unsigned int IF; //TODO: what is this?
+//unsigned int IF; //TODO: what is this?
 void printTCB(TCBptr t)
 {
 	printString("  ID: ");

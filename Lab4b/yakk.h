@@ -7,6 +7,7 @@
 extern unsigned int YKCtxSwCount;
 extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
+extern TCBptr lastRunningTask;
 
 void YKIdleTask(); //function prototype for idle task
 static int IdleStk[IDLE_TASK_STACK_SIZE]; //idle task stack

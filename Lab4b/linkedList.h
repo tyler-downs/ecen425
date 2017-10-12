@@ -5,26 +5,27 @@
 //enum task_state_type {ready, running, suspended};
 
 
-struct context_type //12 16-bit values = 24 bytes
+struct context_type //13 16-bit values = 26 bytes
 {
-	unsigned int sp;
-	unsigned int ip;
+	unsigned int sp;		//0
+	unsigned int ip;		//2
 	//enum task_state_type state;
-	unsigned int ax;
-	unsigned int bx;
-	unsigned int cx;
-	unsigned int dx;
-	unsigned int si;
-	unsigned int di;
-	unsigned int bp;
-	unsigned int es;
-	unsigned int ds;
-	unsigned int IF;
+	unsigned int ax;		//4
+	unsigned int bx;		//6
+	unsigned int cx;		//8
+	unsigned int dx;		//10
+	unsigned int si;		//12
+	unsigned int di;		//14
+	unsigned int bp;		//16
+	unsigned int es;		//18
+	unsigned int ds;		//20
+	unsigned int cs;		//22
+	unsigned int flags;		//24
 };
 
 typedef struct taskblock *TCBptr;
 //typedef struct taskblock *TCBptr;
-typedef struct taskblock //36 bytes in total (24<-context + 12<-other stuff)
+typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
 {
 	struct context_type context;
 	void *stackptr;
@@ -35,8 +36,8 @@ typedef struct taskblock //36 bytes in total (24<-context + 12<-other stuff)
 	unsigned ID;
 } TCB;
 
-static TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
-static TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
+extern TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
+extern TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
 
 TCBptr createTCB(void *stackptr, int priority, struct context_type context);
 

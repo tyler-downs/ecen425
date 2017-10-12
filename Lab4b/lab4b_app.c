@@ -18,7 +18,7 @@ int CStk[CSTACKSIZE];
 void ATask(void);               /* Function prototypes for task code */
 void BTask(void);
 void CTask(void);
-/*
+
 void main(void)
 {
     YKInitialize();
@@ -29,9 +29,10 @@ void main(void)
     printString("Starting kernel...\n");
     YKRun();
 }
-*/
+
 
 //TEST MAIN
+/*
 void main()
 {
 	YKInitialize();
@@ -40,7 +41,7 @@ void main()
 
     //TCBptr task0 = createTCB((void *) &AStk[ASTACKSIZE], 9, initContext);
 }
-
+*/
 
 void ATask(void)
 {

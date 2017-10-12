@@ -37,10 +37,10 @@ void insertTCBIntoRdyList(TCBptr tcb) //inserts the TCB into the ready list
 		if (tmp->prev == NULL) //insert before tmp
 			YKRdyList = tcb;
 		else
-			tmp->prev->next = tmp;
+			tmp->prev->next = tcb;
 		tcb->prev = tmp->prev;
 		tcb->next = tmp;
-		tmp->prev = tmp;
+		tmp->prev = tcb;
 	}
 }
 

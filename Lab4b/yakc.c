@@ -4,7 +4,7 @@
 unsigned int YKIdleCount = 0;
 static int running_flag = 0; //0 means not running, 1 means running
 unsigned int ISRCallDepth = 0;
-static TCBptr lastRunTask = NULL; 
+TCBptr lastRunTask = NULL; 
 unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
 
@@ -13,7 +13,7 @@ unsigned int YKTickNum = 0;
 struct context_type initContext = {
 	0, //sp //this should be the bottom of the task's stack
 	0, //ip //this should be the function pointer value
-//	ready, //ready
+	//	ready, //ready
 	0, //ax  
 	0, //bx  
 	0, //cx
@@ -23,7 +23,7 @@ struct context_type initContext = {
 	0, //bp //this should also be the stack
 	0, //es
 	0, //ds
-	1 //IF
+	1 //flags
 };
 
 void YKInitialize(void)
