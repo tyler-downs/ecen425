@@ -1,35 +1,21 @@
 #include "linkedList.h"
+#include "clib.h"
 
 static unsigned currentListSize = 0;
 
-typedef struct taskblock *TCBptr;
-typedef struct taskblock
-{
-	void *stackptr;
-	unsigned priority;
-	int delay;
-	TCBptr next;
-	TCBptr prev;
-	context_type context;
-} TCB;
-
-TCB TCBarray[MAX_NUM_TASKS + 1]; //plus one for idle task
+struct taskblock TCBarray[MAX_NUM_TASKS + 1]; //plus one for idle task
 
 
-TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
-TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
 //TCBptr 	YKAvailTCBList;
-//TCB 	YKTCBArray[MAXTASKS+1];
-TCBptr running;
+TCBptr runningTask;
 
-TCBptr createTCB(void *stackptr, int priority, context_type context)
+TCBptr createTCB(void *stackptr, int priority, struct context_type context)
 {
 	TCBarray[currentListSize].stackptr = stackptr;
 	TCBarray[currentListSize].priority = priority;
 	TCBarray[currentListSize].context = context;
-	TCBarray[currentListSize].arrayIndex = currentListSize;
 	currentListSize++;
-	return &(myTCBs[currentListSize-1]);
+	return &(TCBarray[currentListSize-1]);
 }
 
 void insertTCBIntoRdyList(TCBptr tcb) //inserts the TCB into the ready list
@@ -75,20 +61,23 @@ void removeFirstTCBFromRdyList() //removes the top TCB from ready list and puts 
        be moved. */
 void moveTCBToRdyList(TCBptr tmp)
 {
+		TCBptr tmp2;
+
     if (tmp->prev == NULL)	/* fix up suspended list */
-		YKSuspList = tmp->next;
-    elsestate
-		tmp->prev->next = tmp->next;
+			YKSuspList = tmp->next;
+    else
+			tmp->prev->next = tmp->next;
     if (tmp->next != NULL)
-		tmp->next->prev = tmp->prev;
+			tmp->next->prev = tmp->prev;
 
     tmp2 = YKRdyList;		/* put in ready list (idle task always at end) */
-    while (tmp2->priority < tmp->priority)
-		tmp2 = tmp2->next;
+
+		while (tmp2->priority < tmp->priority)
+			tmp2 = tmp2->next;
     if (tmp2->prev == NULL)	/* insert before TCB pointed to by tmp2 */
-		YKRdyList = tmp;
+			YKRdyList = tmp;
     else
-		tmp2->prev->next = tmp;
+			tmp2->prev->next = tmp;
     tmp->prev = tmp2->prev;
     tmp->next = tmp2;
     tmp2->prev = tmp;
@@ -96,13 +85,13 @@ void moveTCBToRdyList(TCBptr tmp)
 
 //TEST FUNCTIONS
 #ifdef DEBUG
-void printContext(context_type c)
+void printContext(struct context_type c)
 {
 	printString("\n  sp: ");
 	printInt(c.sp);
 	printString("\n  ip: ");
 	printInt(c.ip);
-	printString("\n  state: ");
+	/*printString("\n  state: ");
 	switch(c.state)
 	{
 		case ready:
@@ -114,7 +103,7 @@ void printContext(context_type c)
 		case suspended:
 			printString("Suspended");
 			break;
-	}
+	}*/
 	printString("\n  ax: ");
 	printInt(c.ax);
 	printString("\n  bx: ");
@@ -128,7 +117,7 @@ void printContext(context_type c)
 	printString("\n  di: ");
 	printInt(c.di);
 	printString("\n  bp: ");
-	printInt(c.dp);
+	printInt(c.bp);
 	printString("\n  es: ");
 	printInt(c.es);
 	printString("\n  ds: ");
@@ -161,7 +150,7 @@ void printLists()
 {
 	//print ready list
 	TCBptr tmp = YKRdyList;
-	printString("Running list: \n")
+	printString("Running list: \n");
 	while (tmp != NULL)
 	{
 		printTCB(tmp);
@@ -169,8 +158,8 @@ void printLists()
 	}
 
 	//print suspended list
-	TCBptr tmp = YKSuspList;
-	printString("Running list: \n")
+	tmp = YKSuspList;
+	printString("Running list: \n");
 	while (tmp != NULL)
 	{
 		printTCB(tmp);

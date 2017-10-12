@@ -2,13 +2,14 @@
 
 #define DEBUG //comment out to not include debug code
 
-typedef enum task_state_type {ready, running, suspended} task_state;
+//enum task_state_type {ready, running, suspended};
 
-typedef struct context_type
+
+struct context_type //12 16-bit values = 24 bytes
 {
 	unsigned int sp;
 	unsigned int ip;
-	task_state_type state;
+	//enum task_state_type state;
 	unsigned int ax;
 	unsigned int bx;
 	unsigned int cx;
@@ -19,11 +20,24 @@ typedef struct context_type
 	unsigned int es;
 	unsigned int ds;
 	unsigned int IF;
-} context;
+};
 
-extern typedef struct taskblock *TCBptr;
+typedef struct taskblock *TCBptr;
+//typedef struct taskblock *TCBptr;
+typedef struct taskblock //
+{
+	struct context_type context;
+	void *stackptr;
+	unsigned priority;
+	int delay;
+	TCBptr next;
+	TCBptr prev;
+} TCB;
 
-TCBptr createTCB(void *stackptr, int priority, context_type context);
+static TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
+static TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
+
+TCBptr createTCB(void *stackptr, int priority, struct context_type context);
 
 void insertTCBIntoRdyList(TCBptr tcb); //inserts the TCB into the ready list
 

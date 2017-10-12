@@ -1,49 +1,45 @@
 #include "yakk.h"
 
-
-int YKIdleCount = 0;
-int running_flag = 0; //0 means not running, 1 means running
-unsigned ISRCallDepth = 0;
+unsigned int YKIdleCount = 0;
+static int running_flag = 0; //0 means not running, 1 means running
+unsigned int ISRCallDepth = 0;
+static TCBptr lastRunTask = NULL;
+unsigned int YKCtxSwCount = 0;
+unsigned int YKTickNum = 0;
 
 void YKInitialize(void)
 {
 		//DO I NEED TO TURN OFF INTERRUPTS?
-	//initialize delayTimes.
-	int i;
-	for (i = 0; i < MAX_NUM_TASKS; i++ )
-	{
-		delayTimes[i] = 0;
-	}
 	//create YKIdleTask
 		//allocate stack space
-	YKNewTask(IdleTask, (void *) &IdleStk(IDLE_TASK_STACK_SIZE), LOWEST_PRIORITY);
+	YKNewTask(YKIdleTask, (void *) &IdleStk[IDLE_TASK_STACK_SIZE], LOWEST_PRIORITY);
 }
 
 void YKIdleTask(void)
 {
 	while(1)
 	{
-		YKIdleCount++
+		YKIdleCount++;
 	}
 	//should take 4 instructions. //NEED TO VERIFY
 }
 
 //ARE THESE THE VALUES WE WANT?
-context_type initContext = {
-	sp = 0;
-	ip = 0;
-	state = ready;
-	ax = 0;
-	bx = 0;
-	cx = 0;
-	dx = 0;
-	si = 0;
-	di = 0;
-	bp = 0;
-	es = 0;
-	ds = 0;
-	IF = 1;
-}
+struct context_type initContext = {
+	0, //sp
+	0, //ip
+//	ready, //ready
+	0, //ax
+	0, //bx
+	0, //cx
+	0, //dx
+	0, //si
+	0, //di
+	0, //bp
+	0, //es
+	0, //ds
+	1 //IF
+};
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority)
 {
@@ -80,34 +76,66 @@ void YKDelayTask(unsigned count)
 	//call scheduler
 	if (count == 0)
 		return;
-
-
+	//grab the running task at the top of the ready list
+	//YKRdyList.state = suspended;
+	YKRdyList->delay = count;
+	removeFirstTCBFromRdyList(); //move to suspended list
+	YKScheduler();
 }
 
 void YKEnterISR(void)
 {
-	ISRCallDepth++
+	ISRCallDepth++;
 }
 
-YKExitISR(void)
+void YKExitISR(void)
 {
-	ISRCallDepth--
+	ISRCallDepth--;
 	if (ISRCallDepth == 0)
 		YKScheduler();
 }
 
-YKScheduler(void)
+void YKScheduler(void)
 {
 	//determine highest priority task
 	//if highest priority task != lastRunTask
 		//call dispatcher
+	if (lastRunTask != YKRdyList) //if the task has changed
+	{
+		//lastRunTask = YKRdyList; //do this inside dispatcher
+		YKDispatcher(); //call the dispatcher.
+	}
+
 }
 
-void YKTickHandler(void
+void YKTickHandler(void)
 {
 	//decrement all tick count globals
 	//for all that are 0
 		//set that task's state to ready in its TCB
 	//++YKTickNum
+	//call user tick handler if exists
+
+	TCBptr tmp;
+	TCBptr tmp2;
+	tmp  = YKSuspList;
+	 while(tmp != NULL)
+	 {
+			if (tmp->delay > 0)
+			{
+				tmp->delay--;
+				if (tmp->delay == 0)
+				{
+					tmp2 = tmp;
+					tmp = tmp->next;
+					moveTCBToRdyList(tmp2); //moving lists changes state
+				}
+				else
+					tmp = tmp->next;
+			}
+			else
+				tmp = tmp->next;
+	 }
+	YKTickNum++;
 	//call user tick handler if exists
 }

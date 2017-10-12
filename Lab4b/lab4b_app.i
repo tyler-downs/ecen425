@@ -41,13 +41,16 @@ void signalEOI(void);
 # 1 "yaku.h" 1
 # 2 "linkedList.h" 2
 
-typedef enum task_state_type {ready, running, suspended} task_state;
 
-typedef struct context_type
+
+
+
+
+struct context_type
 {
  unsigned int sp;
  unsigned int ip;
- task_state_type state;
+
  unsigned int ax;
  unsigned int bx;
  unsigned int cx;
@@ -58,11 +61,24 @@ typedef struct context_type
  unsigned int es;
  unsigned int ds;
  unsigned int IF;
-} context;
+};
 
-extern typedef struct taskblock *TCBptr;
+typedef struct taskblock *TCBptr;
 
-TCBptr createTCB(void *stackptr, int priority, context_type context);
+typedef struct taskblock
+{
+ struct context_type context;
+ void *stackptr;
+ unsigned priority;
+ int delay;
+ TCBptr next;
+ TCBptr prev;
+} TCB;
+
+static TCBptr YKRdyList;
+static TCBptr YKSuspList;
+
+TCBptr createTCB(void *stackptr, int priority, struct context_type context);
 
 void insertTCBIntoRdyList(TCBptr tcb);
 
@@ -73,6 +89,7 @@ void removeFirstTCBFromRdyList();
 
 
 void moveTCBToRdyList(TCBptr tmp);
+
 
 
 void printTCBs();
@@ -87,8 +104,8 @@ extern unsigned int YKCtxSwCount;
 extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 
-void IdleTask();
-int IdleStk[256];
+void YKIdleTask();
+static int IdleStk[256];
 
 
 void YKInitialize(void);
@@ -97,7 +114,7 @@ void YKEnterMutex(void);
 
 void YKExitMutex(void);
 
-YKIdleTask(void);
+void YKIdleTask(void);
 
 void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority);
 
@@ -107,18 +124,13 @@ void YKDelayTask(unsigned count);
 
 void YKEnterISR(void);
 
-YKExitISR(void);
+void YKExitISR(void);
 
-YKScheduler(void);
+void YKScheduler(void);
 
 void YKDispatcher(void);
 
 void YKTickHandler(void);
-
-
-
-
-void printDebug();
 # 9 "lab4b_app.c" 2
 
 

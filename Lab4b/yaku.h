@@ -1,3 +1,4 @@
+#define NULL 0
 
 //the application programmer defines these parameters
 #define MAX_NUM_TASKS 5
