@@ -11,14 +11,21 @@ YKDispatcher:
   ;restore context of new task into registers
   ;restore ip of new task, which will send us to the new task
   mov [lastRunTask], sp
-  mov [YKRdyList+2], ip
-  mov [YKRdyList+4], ax
-  mov [YKRdyList+6], bx
-  mov [YKRdyList+8], cx
-  mov [YKRdyList+10], dx
-  mov [YKRdyList+12], si
-  mov [YKRdyList+14], di
-  mov [YKRdyList+16], bp
-  mov [YKRdyList+18], es
-  mov [YKRdyList+20], ds
-  mov [YKRdyList+22], IF
+  mov [lastRunTask+2], ip
+  mov [lastRunTask+4], ax
+  mov [lastRunTask+6], bx
+  mov [lastRunTask+8], cx
+  mov [lastRunTask+10], dx
+  mov [lastRunTask+12], si
+  mov [lastRunTask+14], di
+  mov [lastRunTask+16], bp
+  mov [lastRunTask+18], es
+  mov [lastRunTask+20], ds
+  mov [lastRunTask+22], IF
+
+  ;assign lastRunTask to the value of YKRdyList
+  mov ax, [YKRdyList]
+  mov [lastRunTask], ax
+
+  ;restore the context of the new task into the registers NOT DONE!!!!!!
+  

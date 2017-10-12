@@ -13,6 +13,8 @@ void YKInitialize(void)
 	//create YKIdleTask
 		//allocate stack space
 	YKNewTask(YKIdleTask, (void *) &IdleStk[IDLE_TASK_STACK_SIZE], LOWEST_PRIORITY);
+	//set lastRunTask to idleTask
+	lastRunTask = YKRdyList;
 }
 
 void YKIdleTask(void)
@@ -26,16 +28,16 @@ void YKIdleTask(void)
 
 //ARE THESE THE VALUES WE WANT?
 struct context_type initContext = {
-	0, //sp
-	0, //ip
+	0, //sp //this should be the bottom of the task's stack
+	0, //ip //this should be the function pointer value
 //	ready, //ready
-	0, //ax
-	0, //bx
+	0, //ax  
+	0, //bx  
 	0, //cx
 	0, //dx
 	0, //si
 	0, //di
-	0, //bp
+	0, //bp //this should also be the stack
 	0, //es
 	0, //ds
 	1 //IF
