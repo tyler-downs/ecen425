@@ -13,55 +13,68 @@ YKDispatcher:
 
 
   cli     ;disable interrupts
-  mov [lastRunTask+4], ax
-  mov [lastRunTask+6], bx
-  mov [lastRunTask+8], cx
-  mov [lastRunTask+10], dx
 
-  pop ax
-  mov [lastRunTask+2], ax ;this is the ip
-  mov [lastRunTask], sp
-  mov [lastRunTask+12], si
-  mov [lastRunTask+14], di
-  mov [lastRunTask+16], bp
-  mov [lastRunTask+18], es
-  mov [lastRunTask+20], ds
-  mov [lastRunTask+22], cs
+  push bp
+  push bx
+
+  mov bx, [lastRunTask]
+
+  mov [bx+4], ax
+  mov [bx+8], cx
+  mov [bx+10], dx
+
+  mov [bx], sp
+  mov [bx+12], si
+  mov [bx+14], di
+
+
+  mov [bx+18], es
+  mov [bx+20], ds
+  mov [bx+22], cs
+
+  mov bp, bx
+  pop bx
+  mov [bp+6], bx
+  mov bx, bp
+  pop bp
+  mov [bx+16], bp
 
   pushf
   pop ax
-  mov [lastRunTask+24], ax
+  mov [bx+24], ax
+
+  pop ax
+  mov [bx+2], ax ;this is the ip
 
 
   ;assign lastRunTask to the value of YKRdyList
   mov ax, [YKRdyList]
   mov [lastRunTask], ax
 
-  ;restore the context of the new task into the registers 
+  ;restore the context of the new task into the registers
   ;this new task is at the top of YKRdyList
 
-  mov bx, [YKRdyList+6]
-  mov cx, [YKRdyList+8]
-  mov dx, [YKRdyList+10]
-  mov si, [YKRdyList+12]
-  mov di, [YKRdyList+14]
-  mov bp, [YKRdyList+16]
-  mov es, [YKRdyList+18]
-  mov ds, [YKRdyList+20]
-  mov sp, [YKRdyList]
+  mov bx, word[YKRdyList]
 
-  mov ax, [YKRdyList+24]
-  push ax                 ;pushes flags to the stack
-  mov ax, [YKRdyList+22] 
-  push ax                 ;pushes cs to the stack
-  mov ax, [YKRdyList+2]
-  push ax                 ;pushes the ip onto the stack
+  mov sp, word [bx] ;sp
+  mov ax, word[bx+4]
+  mov cx, word[bx+8]
+  mov dx, word[bx+10]
+
+  mov di, word[bx+14]
+  mov bp, word[bx+16]
+  mov es, word[bx+18]
+  mov ds, word[bx+20]
 
 
- 
-  mov ax, [YKRdyList+4]   ; restore the actual ax
+  mov si, [bx+24]
+  push si                 ;pushes flags to the stack
+  mov si, [bx+22]
+  push si                 ;pushes cs to the stack
+  mov si, [bx+2]
+  push si                 ;pushes the ip onto the stack
 
+  mov si, word[bx+12]
+  mov bx, word[bx+6]
+  sti
   iret  ;return using iret
-
-
-  

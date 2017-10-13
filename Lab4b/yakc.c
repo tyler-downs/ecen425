@@ -4,9 +4,10 @@
 unsigned int YKIdleCount = 0;
 static int running_flag = 0; //0 means not running, 1 means running
 unsigned int ISRCallDepth = 0;
-TCBptr lastRunTask = NULL; 
+TCBptr lastRunTask = NULL;
 unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
+unsigned int firstTime = 1;
 
 
 //ARE THESE THE VALUES WE WANT?
@@ -14,8 +15,8 @@ struct context_type initContext = {
 	0, //sp //this should be the bottom of the task's stack
 	0, //ip //this should be the function pointer value
 	//	ready, //ready
-	0, //ax  
-	0, //bx  
+	0, //ax
+	0, //bx
 	0, //cx
 	0, //dx
 	0, //si
@@ -23,7 +24,8 @@ struct context_type initContext = {
 	0, //bp //this should also be the stack
 	0, //es
 	0, //ds
-	1 //flags
+	0, //cs
+	0x0200 //flags
 };
 
 void YKInitialize(void)
@@ -32,7 +34,7 @@ void YKInitialize(void)
 	//create YKIdleTask
 		//allocate stack space
 	YKNewTask(YKIdleTask, (void *) &IdleStk[IDLE_TASK_STACK_SIZE], LOWEST_PRIORITY);
-	//set lastRunTask to idleTask
+	//set lastRunTask to idle task (the only thing on ready list)
 	lastRunTask = YKRdyList;
 }
 
@@ -40,7 +42,9 @@ void YKIdleTask(void)
 {
 	while(1)
 	{
-		YKIdleCount++;
+		int tmp;
+		tmp = YKIdleCount + 1;
+		YKIdleCount = tmp;
 	}
 	//should take 4 instructions. //NEED TO VERIFY
 }
@@ -112,8 +116,9 @@ void YKScheduler(void)
 	//determine highest priority task
 	//if highest priority task != lastRunTask
 		//call dispatcher
-	if (lastRunTask != YKRdyList) //if the task has changed
+	if (lastRunTask != YKRdyList || firstTime) //if the task has changed
 	{
+		firstTime = 0;
 		//lastRunTask = YKRdyList; //do this inside dispatcher
 		printString("Calling the dispatcher\n");
 		YKDispatcher(); //call the dispatcher.

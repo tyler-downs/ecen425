@@ -37,7 +37,14 @@ void insertTCBIntoRdyList(TCBptr tcb) //inserts the TCB into the ready list
 		while (tmp->priority < tcb->priority) //find position in sorted array
 			tmp = tmp->next; //ASSUMES IDLE TASK IS AT END
 		if (tmp->prev == NULL) //insert before tmp
+		{
 			YKRdyList = tcb;
+			printString("TCB id = ");
+			printInt(tcb->ID);
+			printString("\nYKRdyList = ");
+			printInt((int) YKRdyList);
+			printNewLine();
+		}
 		else
 			tmp->prev->next = tcb;
 		tcb->prev = tmp->prev;
