@@ -7,7 +7,7 @@
 
 struct context_type //13 16-bit values = 26 bytes
 {
-	unsigned int sp;		//0
+	unsigned sp;		//0
 	unsigned int ip;		//2
 	//enum task_state_type state;
 	unsigned int ax;		//4

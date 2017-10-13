@@ -12,7 +12,7 @@ YKDispatcher:
   ;restore ip of new task, which will send us to the new task
 
 
-
+  cli     ;disable interrupts
   mov [lastRunTask+4], ax
   mov [lastRunTask+6], bx
   mov [lastRunTask+8], cx
@@ -50,8 +50,6 @@ YKDispatcher:
   mov ds, [YKRdyList+20]
   mov sp, [YKRdyList]
 
-
-
   mov ax, [YKRdyList+24]
   push ax                 ;pushes flags to the stack
   mov ax, [YKRdyList+22] 
@@ -62,7 +60,6 @@ YKDispatcher:
 
  
   mov ax, [YKRdyList+4]   ; restore the actual ax
-  
 
   iret  ;return using iret
 

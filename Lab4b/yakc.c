@@ -54,7 +54,12 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority)
 		//add to linked list
 	//if YKRun has been called, call the scheduler
 
-	TCBptr newTCB = createTCB(taskStack, priority, initContext);
+	TCBptr newTCB;
+	newTCB = createTCB(taskStack, priority, initContext);
+	//now change the context parts that need changing
+	newTCB->context.sp = (int)(taskStack);
+	newTCB->context.ip = (int)task;
+	newTCB->context.bp = (int)taskStack;
 	insertTCBIntoRdyList(newTCB); //do we start all tasks as ready?? //TODO
 	printString("Starting new task.\n\r");
 	printTCBs(); //test
@@ -70,6 +75,7 @@ void YKRun(void)
 	//set the running flag
 	//run scheduler
 	running_flag = 1;
+	printString("Running!!\n");
 	//ENABLE INTERRUPTS?
 	YKScheduler();
 }
@@ -109,6 +115,7 @@ void YKScheduler(void)
 	if (lastRunTask != YKRdyList) //if the task has changed
 	{
 		//lastRunTask = YKRdyList; //do this inside dispatcher
+		printString("Calling the dispatcher\n");
 		YKDispatcher(); //call the dispatcher.
 	}
 
