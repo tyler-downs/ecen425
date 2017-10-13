@@ -39,11 +39,11 @@ void insertTCBIntoRdyList(TCBptr tcb) //inserts the TCB into the ready list
 		if (tmp->prev == NULL) //insert before tmp
 		{
 			YKRdyList = tcb;
-			printString("TCB id = ");
+			/*printString("TCB id = ");
 			printInt(tcb->ID);
 			printString("\nYKRdyList = ");
 			printInt((int) YKRdyList);
-			printNewLine();
+			printNewLine();*/
 		}
 		else
 			tmp->prev->next = tcb;

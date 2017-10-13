@@ -3,3 +3,5 @@
 -When I try to run createTCB, I get an error that says I'm doing an illegal conversion from
 pointer to long... but sometimes it lets me compile and run the code. The problem
 seems to arise when I try to put more than one thing into the linked list. 10/12/2017 00:25
+
+We had a pointer issue in our assembly code. To access a pointer you have to save its value into a register, and then access that register using brackets. But we discovered you can only do that with bx or bp. It is important to remember the Addressing Modes.

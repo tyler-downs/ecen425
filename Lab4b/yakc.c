@@ -65,9 +65,9 @@ void YKNewTask(void (* task)(void), void *taskStack, unsigned char priority)
 	newTCB->context.ip = (int)task;
 	newTCB->context.bp = (int)taskStack;
 	insertTCBIntoRdyList(newTCB); //do we start all tasks as ready?? //TODO
-	printString("Starting new task.\n\r");
-	printTCBs(); //test
-	printLists(); //test
+	//printString("Starting new task.\n\r");
+	//printTCBs(); //test
+	//printLists(); //test
 	if (running_flag)
 	{
 		YKScheduler();
@@ -79,7 +79,7 @@ void YKRun(void)
 	//set the running flag
 	//run scheduler
 	running_flag = 1;
-	printString("Running!!\n");
+	//printString("Running!!\n");
 	//ENABLE INTERRUPTS?
 	YKScheduler();
 }
@@ -120,7 +120,8 @@ void YKScheduler(void)
 	{
 		firstTime = 0;
 		//lastRunTask = YKRdyList; //do this inside dispatcher
-		printString("Calling the dispatcher\n");
+		//printString("Calling the dispatcher\n");
+		YKCtxSwCount++;
 		YKDispatcher(); //call the dispatcher.
 	}
 
