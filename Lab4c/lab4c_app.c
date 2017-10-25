@@ -15,6 +15,7 @@ void Task(void);               /* Function prototype for task code */
 
 void main(void)
 {
+    printString("\n\n************ BEGIN ***********\n\r");
     YKInitialize();
     
     printString("Creating task...\n");
@@ -22,6 +23,7 @@ void main(void)
 
     printString("Starting kernel...\n");
     YKRun();
+    printString("YKRun exited... Program ending\n\r");
 }
 
 void Task(void)

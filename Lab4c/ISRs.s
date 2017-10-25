@@ -12,6 +12,8 @@ tick_isr:
 	push es
 	push ds
 
+	call YKEnterISR
+
 	sti 		; enable interrupts
 	call tickInterruptHandler
 	cli			; disable interrupts
@@ -19,6 +21,8 @@ tick_isr:
 	; send EOI command to PIC
 	mov	al, 0x20	; Load nonspecific EOI value (0x20) into register al
 	out	0x20, al	; Write EOI to PIC (port 0x20)
+
+	call YKExitISR
 
 	pop ds
 	pop es
@@ -43,6 +47,8 @@ keyboard_isr:
 	push es
 	push ds
 
+	call YKEnterISR
+
 	sti 		; enable interrupts
 	call keyboardInterruptHandler
 	cli			; disable interrupts
@@ -50,6 +56,8 @@ keyboard_isr:
 	; send EOI command to PIC
 	mov	al, 0x20	; Load nonspecific EOI value (0x20) into register al
 	out	0x20, al	; Write EOI to PIC (port 0x20)
+
+	call YKExitISR
 
 	pop ds
 	pop es

@@ -1,6 +1,8 @@
 #include "clib.h"
+#include "yakk.h"
 
 extern int KeyBuffer;
+static int tickCount = 0;
 
 void resetInterruptHandler()
 {
@@ -9,12 +11,13 @@ void resetInterruptHandler()
 
 void tickInterruptHandler()
 {
-	static int tickCount = 0;
 	tickCount++;
 	printNewLine();
 	printString("TICK ");
 	printInt(tickCount);
 	printNewLine();
+	//call tickHandler
+	YKTickHandler();
 }
 
 void keyboardInterruptHandler()

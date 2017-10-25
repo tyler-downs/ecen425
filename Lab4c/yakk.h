@@ -35,4 +35,6 @@ void YKScheduler(void);
 
 void YKDispatcher(void); //written in assembly
 
+void YKFirstDispatcher(void); //written in assembly
+
 void YKTickHandler(void);

@@ -1,5 +1,6 @@
 #include "yakk.h"
 #include "clib.h"
+//#include "linkedList.h"
 
 unsigned int YKIdleCount = 0;
 static int running_flag = 0; //0 means not running, 1 means running
@@ -40,6 +41,7 @@ void YKInitialize(void)
 
 void YKIdleTask(void)
 {
+	printString("Entering idle task\n\r");
 	while(1)
 	{
 		int tmp;
@@ -92,10 +94,16 @@ void YKDelayTask(unsigned count)
 	//call scheduler
 	if (count == 0)
 		return;
+
+
 	//grab the running task at the top of the ready list
 	//YKRdyList.state = suspended;
 	YKRdyList->delay = count;
 	removeFirstTCBFromRdyList(); //move to suspended list
+
+	//print the ready list (for debug)
+	//printLists();
+
 	YKScheduler();
 }
 
@@ -116,12 +124,20 @@ void YKScheduler(void)
 	//determine highest priority task
 	//if highest priority task != lastRunTask
 		//call dispatcher
-	if (lastRunTask != YKRdyList || firstTime) //if the task has changed
+	//printString("Entering scheduler\n\r");
+	if (firstTime)
 	{
 		firstTime = 0;
-		//lastRunTask = YKRdyList; //do this inside dispatcher
 		//printString("Calling the dispatcher\n");
 		YKCtxSwCount++;
+		//printLists();
+		YKFirstDispatcher(); //call the first dispatcher.
+	}
+	else if (lastRunTask != YKRdyList) //if the task has changed
+	{
+		//printString("Calling the dispatcher\n");
+		YKCtxSwCount++;
+		//printLists();
 		YKDispatcher(); //call the dispatcher.
 	}
 
@@ -138,15 +154,22 @@ void YKTickHandler(void)
 	TCBptr tmp;
 	TCBptr tmp2;
 	tmp  = YKSuspList;
+	//printString("tmp = YKSusplist: ");
+	//printInt((int)tmp);
+	//printString("\ntmp->delay: ");
+	//printInt(tmp->delay);
+	printString("\n");
+
 	 while(tmp != NULL)
 	 {
 			if (tmp->delay > 0)
 			{
-				tmp->delay--;
+				(tmp->delay)--;
 				if (tmp->delay == 0)
 				{
 					tmp2 = tmp;
 					tmp = tmp->next;
+					//printString("Moved TCB to ready list\n\r");
 					moveTCBToRdyList(tmp2); //moving lists changes state
 				}
 				else
@@ -157,4 +180,6 @@ void YKTickHandler(void)
 	 }
 	YKTickNum++;
 	//call user tick handler if exists
+	//call the scheduler
+	YKScheduler();
 }

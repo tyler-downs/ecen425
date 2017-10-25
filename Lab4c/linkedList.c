@@ -144,6 +144,8 @@ void printTCB(TCBptr t)
 	printInt(t->ID);
 	printString("\n  Priority: ");
 	printInt(t->priority);
+	printString("\n  Delay: ");
+	printInt(t->delay);
 	printContext(t->context);
 }
 

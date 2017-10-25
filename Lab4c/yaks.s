@@ -78,3 +78,44 @@ YKDispatcher:
   mov bx, word[bx+6]
   sti
   iret  ;return using iret
+
+
+
+;YKFirstDispatcher(): dispatches when you dont need to save context
+; i.e. when YKRun calls the scheduler
+
+YKFirstDispatcher:
+  
+  cli ;disable interrupts  
+
+  ;assign lastRunTask to the value of YKRdyList
+  mov ax, [YKRdyList]
+  mov [lastRunTask], ax
+
+  ;restore the context of the new task into the registers
+  ;this new task is at the top of YKRdyList
+
+  mov bx, word[YKRdyList]
+
+  mov sp, word [bx] ;sp
+  mov ax, word[bx+4]
+  mov cx, word[bx+8]
+  mov dx, word[bx+10]
+
+  mov di, word[bx+14]
+  mov bp, word[bx+16]
+  mov es, word[bx+18]
+  mov ds, word[bx+20]
+
+
+  mov si, [bx+24]
+  push si                 ;pushes flags to the stack
+  mov si, [bx+22]
+  push si                 ;pushes cs to the stack
+  mov si, [bx+2]
+  push si                 ;pushes the ip onto the stack
+
+  mov si, word[bx+12]
+  mov bx, word[bx+6]
+  sti
+  iret  ;return using iret

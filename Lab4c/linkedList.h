@@ -1,6 +1,6 @@
 #include "yaku.h"
 
-//#define DEBUG //comment out to not include debug code
+#define DEBUG //comment out to not include debug code
 
 //enum task_state_type {ready, running, suspended};
 
