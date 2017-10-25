@@ -1,0 +1,13 @@
+﻿Bond Denhalter
+Tyler Downs
+425 Lab 4c
+
+ Here are some of the problems we encountered:
+the Tick interrupt handler wasn't calling YKTickHandler.
+We needed to create a second dispatcher because our dispatcher was saving context, which made us return to YKRun and the program terminated. The second dispatcher ran only on the first time it was called and didn't save context.
+
+
+
+We spent a total of about 2 hours on this lab. (We did a quality job last week so that made it easier this week)
+
+
