@@ -31,7 +31,9 @@ struct context_type initContext = {
 
 void YKInitialize(void)
 {
-		//DO I NEED TO TURN OFF INTERRUPTS?
+	printString("\n************* BEGIN ***************\n\n");
+	//Turn off interrupts
+	YKEnterMutex();
 	//create YKIdleTask
 		//allocate stack space
 	YKNewTask(YKIdleTask, (void *) &IdleStk[IDLE_TASK_STACK_SIZE], LOWEST_PRIORITY);
@@ -85,7 +87,7 @@ void YKRun(void)
 	//run scheduler
 	running_flag = 1;
 	//printString("Running!!\n");
-	//ENABLE INTERRUPTS?
+	//Enable interrupts and call the scheduler
 	YKScheduler();
 }
 
@@ -102,13 +104,10 @@ void YKDelayTask(unsigned count)
 	//grab the running task at the top of the ready list
 	//YKRdyList.state = suspended;
 	YKRdyList->delay = count;
-	YKEnterMutex();
 	removeFirstTCBFromRdyList(); //move to suspended list
-	YKExitMutex();
 
 	//print the ready list (for debug)
 	//printLists();
-
 	YKScheduler();
 }
 

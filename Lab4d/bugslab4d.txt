@@ -12,3 +12,6 @@ during the creation of Task D. The scheduler is then called, and since
 tasks A, B and C are in the suspended list, only the idle task is available. 
 The program then enters the idle task, but it never exits this task because
 tick interrupts no longer happen. This is all before YKRun is even called.
+
+I wonder if interrupts are supposed to be enabled at all before YKRun() is
+called...
