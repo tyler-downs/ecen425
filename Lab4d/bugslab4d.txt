@@ -1,0 +1,14 @@
+When run at t=10000, the code works fine.
+But when run at t=750, the following output is displayed:
+	Task A started.
+	Task A, delaying 2.
+	Task B started. 
+	Task B, delaying 3.
+	Task C started.
+	Task C, delaying 5.
+	Entering idle task.
+The program enters the idle task because the tick handler is called
+during the creation of Task D. The scheduler is then called, and since
+tasks A, B and C are in the suspended list, only the idle task is available. 
+The program then enters the idle task, but it never exits this task because
+tick interrupts no longer happen. This is all before YKRun is even called.
