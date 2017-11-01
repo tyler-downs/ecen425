@@ -129,6 +129,7 @@ void YKScheduler(void)
 	//if highest priority task != lastRunTask
 		//call dispatcher
 	//printString("Entering scheduler\n\r");
+	YKEnterMutex();
 	if (firstTime)
 	{
 		firstTime = 0;

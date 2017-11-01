@@ -12,7 +12,7 @@ YKDispatcher:
   ;restore ip of new task, which will send us to the new task
 
 
-  cli     ;disable interrupts
+  ;cli     ;disable interrupts
 
   push bp
   push bx
@@ -86,7 +86,7 @@ YKDispatcher:
 
 YKFirstDispatcher:
   
-  cli ;disable interrupts  
+  ;cli ;disable interrupts  
 
   ;assign lastRunTask to the value of YKRdyList
   mov ax, [YKRdyList]
@@ -117,5 +117,5 @@ YKFirstDispatcher:
 
   mov si, word[bx+12]
   mov bx, word[bx+6]
-  sti
+  ;sti                   ;do we need to enable interrupts when the flags will essentially do that?
   iret  ;return using iret

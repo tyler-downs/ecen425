@@ -1,3 +1,4 @@
+*************** Bug Log **************
 When run at t=10000, the code works fine.
 But when run at t=750, the following output is displayed:
 	Task A started.
@@ -15,3 +16,9 @@ tick interrupts no longer happen. This is all before YKRun is even called.
 
 I wonder if interrupts are supposed to be enabled at all before YKRun() is
 called...
+
+The issue was that we were not disabling interrupts at the beginning of the 
+scheduler. When we did that, the tasks were able to start.
+
+*********** Time Commitment ***********
+It took us about 5 hours to finish this lab. 
