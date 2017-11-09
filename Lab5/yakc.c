@@ -9,7 +9,9 @@ TCBptr lastRunTask = NULL;
 unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
 unsigned int firstTime = 1;
+unsigned int currentNumSemaphores = 0; //globally track the current num of semaphores
 
+YKSEM SemArray[MAX_NUM_SEMAPHORES];
 
 //ARE THESE THE VALUES WE WANT?
 struct context_type initContext = {
@@ -188,3 +190,36 @@ void YKTickHandler(void)
 	//call the scheduler
 	YKScheduler();
 }
+
+YKSEM* YKSemCreate(int initialValue)
+{
+	//creates and inits a semaphore, returns ptr to the semaphore that was created
+	YKEnterMutex();
+	YKSEM* sem = &(SemArray[currentNumSemaphores]);
+	sem->value = initialValue;
+	currentNumSemaphores++;
+	YKExitMutex();
+	return sem;
+}
+
+//Tests the value of the semaphore passed in, then decrements it
+//called only from task code
+void YKSemPend(YKSEM *semaphore)
+{
+	//if semaphore->value > 0
+		//decrement value and return
+	//else
+		//the calling task is suspended
+		//call the scheduler
+}
+
+//Can be called from task code OR interrupt handlers
+void YKSemPost(YKSEM *semaphore)
+{
+	//increment the value of semaphore
+	//if any suspended tasks are waiting on this semaphore
+		//highest priority waiting task is made ready
+	//if isrCallDepth <= 0
+		//call the scheduler bc this was called from task code
+	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
+}	

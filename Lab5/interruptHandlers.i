@@ -71,6 +71,7 @@ typedef struct taskblock
  unsigned ID;
 } TCB;
 
+
 extern TCBptr YKRdyList;
 extern TCBptr YKSuspList;
 
@@ -102,6 +103,10 @@ extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
 
+typedef struct YKSemaphore {
+ int value;
+}YKSEM;
+
 void YKIdleTask();
 static int IdleStk[256];
 
@@ -131,6 +136,12 @@ void YKDispatcher(void);
 void YKFirstDispatcher(void);
 
 void YKTickHandler(void);
+
+YKSEM* YKSemCreate(int initialValue);
+
+void YKSemPend(YKSEM *semaphore);
+
+void YKSemPost(YKSEM *semaphore);
 # 3 "interruptHandlers.c" 2
 
 extern int KeyBuffer;

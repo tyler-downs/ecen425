@@ -1,0 +1,7 @@
+YKSemCreate(int)
+	Takes an integer argument:
+		The number of remaining pends that the semaphore can do
+
+
+YKSemPost()
+	Adds 

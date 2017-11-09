@@ -90,7 +90,7 @@ L_interruptHandlers_15:
 	call	printString
 	add	sp, 2
 	; >>>>> Line:	30
-	; >>>>> count = 0; 
+	; >>>>> co 
 	mov	word [bp-2], 0
 	; >>>>> Line:	31
 	; >>>>> while (count < 5000) 
@@ -118,7 +118,7 @@ L_interruptHandlers_19:
 	jmp	L_interruptHandlers_20
 L_interruptHandlers_16:
 	; >>>>> Line:	41
-	; >>>>> printString("KEYPRESS (") 
+	; >>>>> printString("KEYPRESS ("); 
 	mov	ax, L_interruptHandlers_12
 	push	ax
 	call	printString

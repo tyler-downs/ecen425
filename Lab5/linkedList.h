@@ -36,6 +36,7 @@ typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
 	unsigned ID;
 } TCB;
 
+
 extern TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
 extern TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
 

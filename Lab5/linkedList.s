@@ -110,7 +110,7 @@ L_linkedList_8:
 	jmp	L_linkedList_11
 L_linkedList_10:
 	; >>>>> Line:	37
-	; >>>>> tmp = tm 
+	; >>>>> tmp = t 
 	mov	si, word [bp-2]
 	add	si, 32
 	mov	ax, word [si]
@@ -415,7 +415,7 @@ L_linkedList_45:
 	call	printInt
 	add	sp, 2
 	; >>>>> Line:	116
-	; >>>>> printString("\n  ax:  
+	; >>>>> printString("\n  ax: 
 	mov	ax, L_linkedList_33
 	push	ax
 	call	printString
@@ -563,7 +563,7 @@ L_linkedList_51:
 	call	printInt
 	add	sp, 2
 	; >>>>> Line:	144
-	; >>>>> pri 
+	; >>>>> pr 
 	mov	ax, L_linkedList_48
 	push	ax
 	call	printString
@@ -711,7 +711,7 @@ L_linkedList_67:
 	jmp	L_linkedList_69
 L_linkedList_68:
 	; >>>>> Line:	178
-	; >>>>> p 
+	; >>>>>  
 	push	word [bp-2]
 	call	printTCB
 	add	sp, 2

@@ -10,6 +10,10 @@ extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
 
+typedef struct YKSemaphore {
+	int value;
+}YKSEM;
+
 void YKIdleTask(); //function prototype for idle task
 static int IdleStk[IDLE_TASK_STACK_SIZE]; //idle task stack
 
@@ -39,3 +43,9 @@ void YKDispatcher(void); //written in assembly
 void YKFirstDispatcher(void); //written in assembly
 
 void YKTickHandler(void);
+
+YKSEM* YKSemCreate(int initialValue);
+
+void YKSemPend(YKSEM *semaphore);
+
+void YKSemPost(YKSEM *semaphore);

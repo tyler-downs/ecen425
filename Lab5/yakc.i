@@ -45,6 +45,7 @@ typedef struct taskblock
  unsigned ID;
 } TCB;
 
+
 extern TCBptr YKRdyList;
 extern TCBptr YKSuspList;
 
@@ -76,6 +77,10 @@ extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
 
+typedef struct YKSemaphore {
+ int value;
+}YKSEM;
+
 void YKIdleTask();
 static int IdleStk[256];
 
@@ -105,6 +110,12 @@ void YKDispatcher(void);
 void YKFirstDispatcher(void);
 
 void YKTickHandler(void);
+
+YKSEM* YKSemCreate(int initialValue);
+
+void YKSemPend(YKSEM *semaphore);
+
+void YKSemPost(YKSEM *semaphore);
 # 2 "yakc.c" 2
 # 1 "clib.h" 1
 
@@ -141,7 +152,9 @@ TCBptr lastRunTask = 0;
 unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
 unsigned int firstTime = 1;
+unsigned int currentNumSemaphores = 0;
 
+YKSEM SemArray[6];
 
 
 struct context_type initContext = {
@@ -319,4 +332,37 @@ void YKTickHandler(void)
 
 
  YKScheduler();
+}
+
+YKSEM* YKSemCreate(int initialValue)
+{
+
+ YKEnterMutex();
+ YKSEM* sem = &(SemArray[currentNumSemaphores]);
+ sem->value = initialValue;
+ currentNumSemaphores++;
+ YKExitMutex();
+ return sem;
+}
+
+
+
+void YKSemPend(YKSEM *semaphore)
+{
+
+
+
+
+
+}
+
+
+void YKSemPost(YKSEM *semaphore)
+{
+
+
+
+
+
+
 }
