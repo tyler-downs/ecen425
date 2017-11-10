@@ -209,6 +209,7 @@ YKSEM* YKSemCreate(int initialValue)
 //called only from task code
 void YKSemPend(YKSEM *semaphore)
 {
+	YKEnterMutex();
 	//printString("pending semaphore at address ");
 	//printInt((int)semaphore);
 	//printNewLine();
@@ -230,6 +231,7 @@ void YKSemPend(YKSEM *semaphore)
 		//call the scheduler
 		YKScheduler();
 	}
+	YKExitMutex();
 }
 
 //Can be called from task code OR interrupt handlers
@@ -237,6 +239,7 @@ void YKSemPost(YKSEM *semaphore)
 {
 	TCBptr tmp;
 	TCBptr tmp2;
+	YKEnterMutex();
 	//printString("posting semaphore at address ");
 	//printInt((int)semaphore);
 	//printNewLine();
@@ -282,4 +285,5 @@ void YKSemPost(YKSEM *semaphore)
 		YKScheduler();
 	}
 	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
+	YKExitMutex();
 }

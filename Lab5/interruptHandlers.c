@@ -2,6 +2,7 @@
 #include "yakk.h"
 
 extern int KeyBuffer;
+extern YKSEM* NSemPtr;
 static int tickCount = 0;
 
 void resetInterruptHandler()
@@ -35,6 +36,10 @@ void keyboardInterruptHandler()
 		printNewLine();
 		printString("DELAY COMPLETE");
 		printNewLine();
+	}
+	else if (KeyBuffer == 'p')
+	{
+		YKSemPost(NSemPtr);
 	}
 	else
 	{
