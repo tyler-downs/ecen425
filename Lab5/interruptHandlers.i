@@ -146,6 +146,7 @@ void YKSemPost(YKSEM *semaphore);
 # 3 "interruptHandlers.c" 2
 
 extern int KeyBuffer;
+extern YKSEM* NSemPtr;
 static int tickCount = 0;
 
 void resetInterruptHandler()
@@ -179,6 +180,10 @@ void keyboardInterruptHandler()
   printNewLine();
   printString("DELAY COMPLETE");
   printNewLine();
+ }
+ else if (KeyBuffer == 'p')
+ {
+  YKSemPost(NSemPtr);
  }
  else
  {

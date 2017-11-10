@@ -259,11 +259,15 @@ void YKDelayTask(unsigned count)
 void YKEnterISR(void)
 {
 
+
+
  ISRCallDepth++;
 }
 
 void YKExitISR(void)
 {
+
+
 
  ISRCallDepth--;
  if (ISRCallDepth == 0)
@@ -332,8 +336,6 @@ void YKTickHandler(void)
   }
  YKTickNum++;
 
-
- YKScheduler();
 }
 
 YKSEM* YKSemCreate(int initialValue)
@@ -353,6 +355,7 @@ YKSEM* YKSemCreate(int initialValue)
 
 void YKSemPend(YKSEM *semaphore)
 {
+ YKEnterMutex();
 
 
 
@@ -374,6 +377,7 @@ void YKSemPend(YKSEM *semaphore)
 
   YKScheduler();
  }
+ YKExitMutex();
 }
 
 
@@ -381,13 +385,14 @@ void YKSemPost(YKSEM *semaphore)
 {
  TCBptr tmp;
  TCBptr tmp2;
+ YKEnterMutex();
 
 
 
 
 
  (semaphore->value)++;
-# 257 "yakc.c"
+# 262 "yakc.c"
  tmp = YKSuspList;
  while(tmp != 0)
  {
@@ -409,11 +414,16 @@ void YKSemPost(YKSEM *semaphore)
 
 
 
- if (ISRCallDepth <= 1)
+ if (ISRCallDepth <= 0)
  {
 
 
   YKScheduler();
  }
+ else
+ {
 
+ }
+
+ YKExitMutex();
 }

@@ -114,13 +114,17 @@ void YKDelayTask(unsigned count)
 
 void YKEnterISR(void)
 {
-//	printString("INC\n\r");
+	//printString("YK Enter ISR: call depth = ");
+	//printInt(ISRCallDepth);
+	//printNewLine();
 	ISRCallDepth++;
 }
 
 void YKExitISR(void)
 {
-//	printString("DEC\n\r");
+	//printString("YK Exit ISR: call depth =");
+	//printInt(ISRCallDepth);
+	//printNewLine();
 	ISRCallDepth--;
 	if (ISRCallDepth == 0)
 		YKScheduler();
@@ -188,8 +192,6 @@ void YKTickHandler(void)
 	 }
 	YKTickNum++;
 	//call user tick handler if exists
-	//call the scheduler
-	YKScheduler();
 }
 
 YKSEM* YKSemCreate(int initialValue)
@@ -278,11 +280,15 @@ void YKSemPost(YKSEM *semaphore)
 //	printString("ISRCallDepth = ");
 //	printInt(ISRCallDepth);
 //	printNewLine();
-	if (ISRCallDepth <= 1)
+	if (ISRCallDepth <= 0)
 	{
 		//printString("Calling the scheduler\n\r");
 		//call the scheduler bc this was called from task code
 		YKScheduler();
+	}
+	else
+	{
+		//printString("called semPost inside an interrupt");
 	}
 	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
 	YKExitMutex();
