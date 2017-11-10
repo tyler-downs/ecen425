@@ -1,6 +1,5 @@
 #include "yakk.h"
 #include "clib.h"
-//#include "linkedList.h"
 
 unsigned int YKIdleCount = 0;
 unsigned int running_flag = 0; //0 means not running, 1 means running
@@ -194,10 +193,12 @@ void YKTickHandler(void)
 YKSEM* YKSemCreate(int initialValue)
 {
 	//creates and inits a semaphore, returns ptr to the semaphore that was created
-	YKEnterMutex();
-	YKSEM* sem = &(SemArray[currentNumSemaphores]);
-	sem->value = initialValue;
-	currentNumSemaphores++;
+	YKSEM* sem;
+	YKEnterMutex(); //disable interrupts
+	sem = &(SemArray[currentNumSemaphores]); //set sem to address of current semaphore struct
+	sem->value = initialValue; //set the initial value for the semaphore
+	//sem->addrWaitingOnSem = 0;
+	currentNumSemaphores++; //increment current sem count, enable interrupts and return the pointer
 	YKExitMutex();
 	return sem;
 }
@@ -206,20 +207,65 @@ YKSEM* YKSemCreate(int initialValue)
 //called only from task code
 void YKSemPend(YKSEM *semaphore)
 {
+	printString("pending semaphore at address ");
+	printInt((int)semaphore);
+	//printString(", waiting on task at ");
+	//printInt((int)(semaphore->addrWaitingOnSem));
+	printNewLine();
+	printLists();
 	//if semaphore->value > 0
-		//decrement value and return
-	//else
-		//the calling task is suspended
+	if (semaphore->value > 0)
+	{
+		//decrement semaphore value and we're done
+		(semaphore->value)--;
+		printString("Decremented semaphore during pend\n\r");
+	}
+	else
+	{
+		//(semaphore->addrWaitingOnSem) = YKRdyList;
+		YKRdyList->pendingSem = semaphore; //set the pending sem of this task equal to the address of this semaphore
+		//the calling task is suspended by the kernel until the sem is available
+		removeFirstTCBFromRdyList();
 		//call the scheduler
+		YKScheduler();
+	}
 }
 
 //Can be called from task code OR interrupt handlers
 void YKSemPost(YKSEM *semaphore)
 {
+	TCBptr tmp;
+	printString("posting semaphore at address ");
+	printInt((int)semaphore);
+	//printString(", waiting on task at ");
+        //printInt((int)(semaphore->addrWaitingOnSem));
+	printNewLine();	
+	printLists();
 	//increment the value of semaphore
-	//if any suspended tasks are waiting on this semaphore
+	(semaphore->value)++;
+	//if any suspended tasks are waiting on this semaphoire
 		//highest priority waiting task is made ready
-	//if isrCallDepth <= 0
+	/*if(semaphore->addrWaitingOnSem != 0)
+	{
+		moveTCBToRdyList((TCBptr) (semaphore->addrWaitingOnSem));
+		semaphore->addrWaitingOnSem = 0;
+	}*/
+	
+	//now iterate through the suspend list
+	//check the semaphore we are posting against the pendingSem addresses of each task in the susp list
+		//if they match, put that task back into the ready list
+	tmp = YKSuspList;
+	while(tmp->next != NULL)
+	{
+		if (tmp->pendingSem == semaphore)
+			moveTCBToRdyList(tmp);
+		tmp = tmp->next;
+	}
+
+	if (ISRCallDepth <= 0)
+	{
 		//call the scheduler bc this was called from task code
+		YKScheduler();
+	}
 	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
 }	

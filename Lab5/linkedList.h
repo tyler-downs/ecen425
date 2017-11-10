@@ -23,6 +23,10 @@ struct context_type //13 16-bit values = 26 bytes
 	unsigned int flags;		//24
 };
 
+typedef struct {
+	int value;
+} YKSEM;
+
 typedef struct taskblock *TCBptr;
 //typedef struct taskblock *TCBptr;
 typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
@@ -34,6 +38,7 @@ typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
 	TCBptr next;
 	TCBptr prev;
 	unsigned ID;
+	YKSEM* pendingSem; //indicates what semaphore put the task in the susp list. if none, 0
 } TCB;
 
 

@@ -6,7 +6,6 @@ TCBptr 	YKRdyList; //points to first TCB in ready list (sorted)
 TCBptr 	YKSuspList; //points to first TCB in suspended list (unsorted)
 
 struct taskblock TCBarray[MAX_NUM_TASKS + 1]; //plus one for idle task
-//struct semaphore SemArray[MAX_NUM_SEMAPHORES];
 
 //TCBptr 	YKAvailTCBList;
 TCBptr runningTask;
@@ -17,6 +16,7 @@ TCBptr createTCB(void *stackptr, int priority, struct context_type context)
 	TCBarray[currentListSize].priority = priority;
 	TCBarray[currentListSize].context = context;
 	TCBarray[currentListSize].ID = currentListSize;
+	TCBarray[currentListSize].pendingSem = 0;
 	currentListSize++;
 	return &(TCBarray[currentListSize-1]);
 }

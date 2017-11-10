@@ -10,9 +10,12 @@ extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
 
-typedef struct YKSemaphore {
+/*
+typedef struct {
 	int value;
+	//void* addrWaitingOnSem;
 }YKSEM;
+*/
 
 void YKIdleTask(); //function prototype for idle task
 static int IdleStk[IDLE_TASK_STACK_SIZE]; //idle task stack
