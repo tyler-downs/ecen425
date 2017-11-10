@@ -7,36 +7,36 @@ L_linkedList_1:
 	DW	0
 	ALIGN	2
 createTCB:
-	; >>>>> Line:	15
+	; >>>>> Line:	14
 	; >>>>> { 
 	jmp	L_linkedList_2
 L_linkedList_3:
-	; >>>>> Line:	16
+	; >>>>> Line:	15
 	; >>>>> TCBarray[currentListSize].stackptr = stackptr; 
 	mov	ax, word [L_linkedList_1]
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 	mov	si, ax
 	add	si, 26
 	mov	ax, word [bp+4]
 	mov	word [si], ax
-	; >>>>> Line:	17
+	; >>>>> Line:	16
 	; >>>>> TCBarray[currentListSize].priority = priority; 
 	mov	ax, word [L_linkedList_1]
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 	mov	si, ax
 	add	si, 28
 	mov	ax, word [bp+6]
 	mov	word [si], ax
-	; >>>>> Line:	18
+	; >>>>> Line:	17
 	; >>>>> TCBarray[currentListSize].context = context; 
 	lea	ax, [bp+8]
 	mov	word [bp-2], ax
 	mov	ax, word [L_linkedList_1]
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 	mov	word [bp-4], ax
@@ -45,16 +45,25 @@ L_linkedList_3:
 	mov	cx, 13
 	rep
 	movsw
-	; >>>>> Line:	19
+	; >>>>> Line:	18
 	; >>>>> TCBarray[currentListSize].ID = currentListSize; 
 	mov	ax, word [L_linkedList_1]
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 	mov	si, ax
 	add	si, 36
 	mov	ax, word [L_linkedList_1]
 	mov	word [si], ax
+	; >>>>> Line:	19
+	; >>>>> TCBarray[currentListSize].pendingSem = 0; 
+	mov	ax, word [L_linkedList_1]
+	mov	cx, 40
+	imul	cx
+	add	ax, TCBarray
+	mov	si, ax
+	add	si, 38
+	mov	word [si], 0
 	; >>>>> Line:	20
 	; >>>>> currentListSize++; 
 	inc	word [L_linkedList_1]
@@ -62,7 +71,7 @@ L_linkedList_3:
 	; >>>>> return &(TCBarray[currentListSize-1]); 
 	mov	ax, word [L_linkedList_1]
 	dec	ax
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 L_linkedList_4:
@@ -90,7 +99,7 @@ L_linkedList_7:
 	mov	ax, word [bp+4]
 	mov	word [YKRdyList], ax
 	; >>>>> Line:	30
-	; >>>>> tcb->next = 0; 
+	; >>>>> tcb->next =  
 	mov	si, word [bp+4]
 	add	si, 32
 	mov	word [si], 0
@@ -110,7 +119,7 @@ L_linkedList_8:
 	jmp	L_linkedList_11
 L_linkedList_10:
 	; >>>>> Line:	37
-	; >>>>> tmp = t 
+	; >>>>> tmp = tmp->next; 
 	mov	si, word [bp-2]
 	add	si, 32
 	mov	ax, word [si]
@@ -399,7 +408,7 @@ L_linkedList_45:
 	call	printString
 	add	sp, 2
 	; >>>>> Line:	100
-	; >>>>> printInt(c.sp); 
+	; >>>>>  
 	push	word [bp+4]
 	call	printInt
 	add	sp, 2
@@ -415,7 +424,7 @@ L_linkedList_45:
 	call	printInt
 	add	sp, 2
 	; >>>>> Line:	116
-	; >>>>> printString("\n  ax: 
+	; >>>>> printString("\n  ax: "); 
 	mov	ax, L_linkedList_33
 	push	ax
 	call	printString
@@ -520,7 +529,7 @@ L_linkedList_45:
 	call	printString
 	add	sp, 2
 	; >>>>> Line:	135
-	; >>>>> printInt(c.flags); 
+	; >>>>> printInt(c.flag 
 	push	word [bp+28]
 	call	printInt
 	add	sp, 2
@@ -563,7 +572,7 @@ L_linkedList_51:
 	call	printInt
 	add	sp, 2
 	; >>>>> Line:	144
-	; >>>>> pr 
+	; >>>>> printString("\n  Priority: "); 
 	mov	ax, L_linkedList_48
 	push	ax
 	call	printString
@@ -635,7 +644,7 @@ L_linkedList_56:
 	; >>>>> Line:	159
 	; >>>>> printTCB(&TCBarray[i]); 
 	mov	ax, word [bp-2]
-	mov	cx, 38
+	mov	cx, 40
 	imul	cx
 	add	ax, TCBarray
 	push	ax
@@ -686,7 +695,7 @@ L_linkedList_65:
 	call	printTCB
 	add	sp, 2
 	; >>>>> Line:	170
-	; >>>>> tmp = tmp->next; 
+	; >>>>>  
 	mov	si, word [bp-2]
 	add	si, 32
 	mov	ax, word [si]
@@ -711,7 +720,7 @@ L_linkedList_67:
 	jmp	L_linkedList_69
 L_linkedList_68:
 	; >>>>> Line:	178
-	; >>>>>  
+	; >>>>> printTCB(tmp); 
 	push	word [bp-2]
 	call	printTCB
 	add	sp, 2
@@ -740,6 +749,6 @@ YKRdyList:
 YKSuspList:
 	TIMES	2 db 0
 TCBarray:
-	TIMES	228 db 0
+	TIMES	240 db 0
 runningTask:
 	TIMES	2 db 0

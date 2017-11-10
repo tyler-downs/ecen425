@@ -31,6 +31,10 @@ struct context_type
  unsigned int flags;
 };
 
+typedef struct {
+ int value;
+} YKSEM;
+
 typedef struct taskblock *TCBptr;
 
 typedef struct taskblock
@@ -42,6 +46,7 @@ typedef struct taskblock
  TCBptr next;
  TCBptr prev;
  unsigned ID;
+ YKSEM* pendingSem;
 } TCB;
 
 
@@ -99,7 +104,6 @@ TCBptr YKSuspList;
 struct taskblock TCBarray[5 + 1];
 
 
-
 TCBptr runningTask;
 
 TCBptr createTCB(void *stackptr, int priority, struct context_type context)
@@ -108,6 +112,7 @@ TCBptr createTCB(void *stackptr, int priority, struct context_type context)
  TCBarray[currentListSize].priority = priority;
  TCBarray[currentListSize].context = context;
  TCBarray[currentListSize].ID = currentListSize;
+ TCBarray[currentListSize].pendingSem = 0;
  currentListSize++;
  return &(TCBarray[currentListSize-1]);
 }

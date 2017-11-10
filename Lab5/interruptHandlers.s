@@ -84,13 +84,13 @@ L_interruptHandlers_15:
 	cmp	word [KeyBuffer], 100
 	jne	L_interruptHandlers_16
 	; >>>>> Line:	29
-	; >>>>> printString("DELAY KEY PRESSED"); 
+	; >>>>> printString("DEL 
 	mov	ax, L_interruptHandlers_10
 	push	ax
 	call	printString
 	add	sp, 2
 	; >>>>> Line:	30
-	; >>>>> co 
+	; >>>>> count = 0; 
 	mov	word [bp-2], 0
 	; >>>>> Line:	31
 	; >>>>> while (count < 5000) 

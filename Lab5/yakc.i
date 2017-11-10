@@ -32,6 +32,10 @@ struct context_type
  unsigned int flags;
 };
 
+typedef struct {
+ int value;
+} YKSEM;
+
 typedef struct taskblock *TCBptr;
 
 typedef struct taskblock
@@ -43,6 +47,7 @@ typedef struct taskblock
  TCBptr next;
  TCBptr prev;
  unsigned ID;
+ YKSEM* pendingSem;
 } TCB;
 
 
@@ -76,11 +81,7 @@ extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
-
-typedef struct YKSemaphore {
- int value;
-}YKSEM;
-
+# 20 "yakk.h"
 void YKIdleTask();
 static int IdleStk[256];
 
@@ -143,7 +144,6 @@ void exit(unsigned char code);
 
 void signalEOI(void);
 # 3 "yakc.c" 2
-
 
 unsigned int YKIdleCount = 0;
 unsigned int running_flag = 0;
@@ -258,11 +258,13 @@ void YKDelayTask(unsigned count)
 
 void YKEnterISR(void)
 {
+
  ISRCallDepth++;
 }
 
 void YKExitISR(void)
 {
+
  ISRCallDepth--;
  if (ISRCallDepth == 0)
   YKScheduler();
@@ -337,9 +339,11 @@ void YKTickHandler(void)
 YKSEM* YKSemCreate(int initialValue)
 {
 
+ YKSEM* sem;
  YKEnterMutex();
- YKSEM* sem = &(SemArray[currentNumSemaphores]);
+ sem = &(SemArray[currentNumSemaphores]);
  sem->value = initialValue;
+
  currentNumSemaphores++;
  YKExitMutex();
  return sem;
@@ -354,15 +358,62 @@ void YKSemPend(YKSEM *semaphore)
 
 
 
+ if (semaphore->value > 0)
+ {
+
+  (semaphore->value)--;
+
+ }
+ else
+ {
+
+  (semaphore->value)--;
+  YKRdyList->pendingSem = semaphore;
+
+  removeFirstTCBFromRdyList();
+
+  YKScheduler();
+ }
 }
 
 
 void YKSemPost(YKSEM *semaphore)
 {
+ TCBptr tmp;
+ TCBptr tmp2;
 
 
 
 
 
+ (semaphore->value)++;
+# 257 "yakc.c"
+ tmp = YKSuspList;
+ while(tmp != 0)
+ {
+
+  if (tmp->pendingSem == semaphore){
+   tmp->pendingSem = 0;
+
+
+
+  tmp2 = tmp;
+  tmp = tmp->next;
+   moveTCBToRdyList(tmp2);
+  }
+  else
+  {
+   tmp = tmp->next;
+  }
+ }
+
+
+
+ if (ISRCallDepth <= 1)
+ {
+
+
+  YKScheduler();
+ }
 
 }

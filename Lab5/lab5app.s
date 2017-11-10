@@ -2,6 +2,545 @@
 	CPU	8086
 	ALIGN	2
 	jmp	main	; Jump to program start
+L_lab5app_4:
+	DB	"works",0
+L_lab5app_3:
+	DB	"it",0
+L_lab5app_2:
+	DB	"Hey",0
+	ALIGN	2
+TaskWord:
+	; >>>>> Line:	24
+	; >>>>> { 
+	jmp	L_lab5app_5
+L_lab5app_6:
+	; >>>>> Line:	25
+	; >>>>> while (1) 
+	jmp	L_lab5app_8
+L_lab5app_7:
+	; >>>>> Line:	27
+	; >>>>> YKSemPend(WSemPtr); 
+	push	word [WSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	28
+	; >>>>> printString("Hey"); 
+	mov	ax, L_lab5app_2
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	29
+	; >>>>> YKSemPost(PSemPtr); 
+	push	word [PSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	; >>>>> Line:	31
+	; >>>>> YKSemPend(WSemPtr); 
+	push	word [WSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	32
+	; >>>>> printString("it"); 
+	mov	ax, L_lab5app_3
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	33
+	; >>>>> YKSemPost(SSemPtr); 
+	push	word [SSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	; >>>>> Line:	35
+	; >>>>> YKSemPend(WSemPtr); 
+	push	word [WSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	36
+	; >>>>> printString("works"); 
+	mov	ax, L_lab5app_4
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	37
+	; >>>>> YKSemPost(PSemPtr); 
+	push	word [PSemPtr]
+	call	YKSemPost
+	add	sp, 2
+L_lab5app_8:
+	jmp	L_lab5app_7
+L_lab5app_9:
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_5:
+	push	bp
+	mov	bp, sp
+	jmp	L_lab5app_6
+	ALIGN	2
+TaskSpace:
+	; >>>>> Line:	42
+	; >>>>> { 
+	jmp	L_lab5app_11
+L_lab5app_12:
+	; >>>>> Line:	43
+	; >>>>> while (1) 
+	jmp	L_lab5app_14
+L_lab5app_13:
+	; >>>>> Line:	45
+	; >>>>> YKSemPend(SSemPtr); 
+	push	word [SSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	46
+	; >>>>> printChar(' '); 
+	mov	al, 32
+	push	ax
+	call	printChar
+	add	sp, 2
+	; >>>>> Line:	47
+	; >>>>> YKSemPost(WSemPtr); 
+	push	word [WSemPtr]
+	call	YKSemPost
+	add	sp, 2
+L_lab5app_14:
+	jmp	L_lab5app_13
+L_lab5app_15:
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_11:
+	push	bp
+	mov	bp, sp
+	jmp	L_lab5app_12
+L_lab5app_17:
+	DB	"!",'"',0xD,0xA,0
+	ALIGN	2
+TaskPunc:
+	; >>>>> Line:	52
+	; >>>>> { 
+	jmp	L_lab5app_18
+L_lab5app_19:
+	; >>>>> Line:	53
+	; >>>>> while (1) 
+	jmp	L_lab5app_21
+L_lab5app_20:
+	; >>>>> Line:	55
+	; >>>>> YKSemPend(PSemPtr); 
+	push	word [PSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	56
+	; >>>>> printChar('"'); 
+	mov	al, 34
+	push	ax
+	call	printChar
+	add	sp, 2
+	; >>>>> Line:	57
+	; >>>>> YKSemPost(WSemPtr); 
+	push	word [WSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	; >>>>> Line:	59
+	; >>>>> YKSemPend(PSemPtr); 
+	push	word [PSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	60
+	; >>>>> printChar(','); 
+	mov	al, 44
+	push	ax
+	call	printChar
+	add	sp, 2
+	; >>>>> Line:	61
+	; >>>>> YKSemPost(SSemPtr); 
+	push	word [SSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	; >>>>> Line:	63
+	; >>>>> YKSemPend(PSemPtr); 
+	push	word [PSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	64
+	; >>>>> printString("!\"\r\n"); 
+	mov	ax, L_lab5app_17
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	65
+	; >>>>> YKSemPost(PSe 
+	push	word [PSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	; >>>>> Line:	67
+	; >>>>> YKDelayTask(6); 
+	mov	ax, 6
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+L_lab5app_21:
+	jmp	L_lab5app_20
+L_lab5app_22:
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_18:
+	push	bp
+	mov	bp, sp
+	jmp	L_lab5app_19
+	ALIGN	2
+TaskPrime:
+	; >>>>> Line:	72
+	; >>>>> { 
+	jmp	L_lab5app_24
+L_lab5app_25:
+	; >>>>> Line:	77
+	; >>>>> while (1) 
+	mov	word [bp-2], 1001
+	; >>>>> Line:	77
+	; >>>>> while (1) 
+	jmp	L_lab5app_27
+L_lab5app_26:
+	; >>>>> Line:	79
+	; >>>>> YKSemPend(NSemPtr); 
+	push	word [NSemPtr]
+	call	YKSemPend
+	add	sp, 2
+	; >>>>> Line:	82
+	; >>>>> lncnt = 0; 
+	mov	word [bp-8], 0
+	; >>>>> Line:	83
+	; >>>>> endval = curval + 500; 
+	mov	ax, word [bp-2]
+	add	ax, 500
+	mov	word [bp-10], ax
+	; >>>>> Line:	84
+	; >>>>> for ( ; curval < endval; curval += 2) 
+	jmp	L_lab5app_30
+L_lab5app_29:
+	; >>>>> Line:	86
+	; >>>>> flag = 0; 
+	mov	word [bp-6], 0
+	; >>>>> Line:	87
+	; >>>>> for (j = 3; (j*j) < curval; j += 2) 
+	mov	word [bp-4], 3
+	jmp	L_lab5app_34
+L_lab5app_33:
+	; >>>>> Line:	89
+	; >>>>> if (curval % j == 0) 
+	mov	ax, word [bp-2]
+	cwd
+	idiv	word [bp-4]
+	mov	ax, dx
+	test	ax, ax
+	jne	L_lab5app_37
+	; >>>>> Line:	91
+	; >>>>> flag = 1; 
+	mov	word [bp-6], 1
+	; >>>>> Line:	92
+	; >>>>> break; 
+	jmp	L_lab5app_35
+L_lab5app_37:
+L_lab5app_36:
+	add	word [bp-4], 2
+L_lab5app_34:
+	mov	ax, word [bp-4]
+	imul	word [bp-4]
+	mov	dx, word [bp-2]
+	cmp	dx, ax
+	jg	L_lab5app_33
+L_lab5app_35:
+	; >>>>> Line:	95
+	; >>>>>  
+	mov	ax, word [bp-6]
+	test	ax, ax
+	jne	L_lab5app_38
+	; >>>>> Line:	97
+	; >>>>> printChar(' '); 
+	mov	al, 32
+	push	ax
+	call	printChar
+	add	sp, 2
+	; >>>>> Line:	98
+	; >>>>> printInt(curval); 
+	push	word [bp-2]
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	99
+	; >>>>> lncnt++; 
+	inc	word [bp-8]
+	; >>>>> Line:	100
+	; >>>>> if (lncnt > 9) 
+	cmp	word [bp-8], 9
+	jle	L_lab5app_39
+	; >>>>> Line:	102
+	; >>>>> printNewLine(); 
+	call	printNewLine
+	; >>>>> Line:	103
+	; >>>>> lncnt = 0; 
+	mov	word [bp-8], 0
+L_lab5app_39:
+L_lab5app_38:
+L_lab5app_32:
+	add	word [bp-2], 2
+L_lab5app_30:
+	mov	ax, word [bp-10]
+	cmp	ax, word [bp-2]
+	jg	L_lab5app_29
+L_lab5app_31:
+	; >>>>> Line:	107
+	; >>>>> printNewLine(); 
+	call	printNewLine
+L_lab5app_27:
+	jmp	L_lab5app_26
+L_lab5app_28:
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_24:
+	push	bp
+	mov	bp, sp
+	sub	sp, 10
+	jmp	L_lab5app_25
+L_lab5app_45:
+	DB	"% >>>>>",0xD,0xA,0
+L_lab5app_44:
+	DB	", CPU usage: ",0
+L_lab5app_43:
+	DB	"<<<<< Context switches: ",0
+L_lab5app_42:
+	DB	"Determining CPU capacity",0xD,0xA,0
+L_lab5app_41:
+	DB	"Welcome to the YAK kernel",0xD,0xA,0
+	ALIGN	2
+TaskStat:
+	; >>>>> Line:	112
+	; >>>>> { 
+	jmp	L_lab5app_46
+L_lab5app_47:
+	; >>>>> Line:	116
+	; >>>>> YKDelayTask(1); 
+	mov	ax, 1
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	117
+	; >>>>> printString("Welcome to the YAK kernel\r\n"); 
+	mov	ax, L_lab5app_41
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	118
+	; >>>>> printString("Determining CPU capacity\r\n") 
+	mov	ax, L_lab5app_42
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	119
+	; >>>>> YKDelayTask(1); 
+	mov	ax, 1
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	120
+	; >>>>> YKIdleCount = 0; 
+	mov	word [YKIdleCount], 0
+	; >>>>> Line:	121
+	; >>>>> YKDelayTask(5); 
+	mov	ax, 5
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	122
+	; >>>>> max = YKIdleCount / 25; 
+	mov	ax, word [YKIdleCount]
+	xor	dx, dx
+	mov	cx, 25
+	div	cx
+	mov	word [bp-2], ax
+	; >>>>> Line:	123
+	; >>>>> YKIdleCount = 0; 
+	mov	word [YKIdleCount], 0
+	; >>>>> Line:	125
+	; >>>>> YKNewTask(TaskPrime, (void *) &TaskPRMStk[512], 32); 
+	mov	al, 32
+	push	ax
+	mov	ax, (TaskPRMStk+1024)
+	push	ax
+	mov	ax, TaskPrime
+	push	ax
+	call	YKNewTask
+	add	sp, 6
+	; >>>>> Line:	126
+	; >>>>> YKNewTask(TaskWord, (void *) &TaskWStk[512], 10); 
+	mov	al, 10
+	push	ax
+	mov	ax, (TaskWStk+1024)
+	push	ax
+	mov	ax, TaskWord
+	push	ax
+	call	YKNewTask
+	add	sp, 6
+	; >>>>> Line:	127
+	; >>>>> YKNewTask(TaskSpace, (void *) &TaskSStk[512], 11); 
+	mov	al, 11
+	push	ax
+	mov	ax, (TaskSStk+1024)
+	push	ax
+	mov	ax, TaskSpace
+	push	ax
+	call	YKNewTask
+	add	sp, 6
+	; >>>>> Line:	128
+	; >>>>> YKNewTask(TaskPunc, (void *) &TaskPStk[512], 12); 
+	mov	al, 12
+	push	ax
+	mov	ax, (TaskPStk+1024)
+	push	ax
+	mov	ax, TaskPunc
+	push	ax
+	call	YKNewTask
+	add	sp, 6
+	; >>>>> Line:	130
+	; >>>>> while (1) 
+	jmp	L_lab5app_49
+L_lab5app_48:
+	; >>>>> Line:	132
+	; >>>>> YKDelayTask(20); 
+	mov	ax, 20
+	push	ax
+	call	YKDelayTask
+	add	sp, 2
+	; >>>>> Line:	134
+	; >>>>> YKEnterMutex(); 
+	call	YKEnterMutex
+	; >>>>> Line:	135
+	; >>>>> switchCount = YKCtxSwCount; 
+	mov	ax, word [YKCtxSwCount]
+	mov	word [bp-4], ax
+	; >>>>> Line:	136
+	; >>>>> idleCount = YKIdleCount; 
+	mov	ax, word [YKIdleCount]
+	mov	word [bp-6], ax
+	; >>>>> Line:	137
+	; >>>>> YKExitMutex(); 
+	call	YKExitMutex
+	; >>>>> Line:	139
+	; >>>>> TaskStat, (void *) &T 
+	mov	ax, L_lab5app_43
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	140
+	; >>>>> printInt((int)switchCount); 
+	push	word [bp-4]
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	141
+	; >>>>> printString(", CPU usage: "); 
+	mov	ax, L_lab5app_44
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	142
+	; >>>>> tmp = (int) (idleCount/max); 
+	mov	ax, word [bp-6]
+	xor	dx, dx
+	div	word [bp-2]
+	mov	word [bp-8], ax
+	; >>>>> Line:	143
+	; >>>>> printInt(100-tmp); 
+	mov	ax, 100
+	sub	ax, word [bp-8]
+	push	ax
+	call	printInt
+	add	sp, 2
+	; >>>>> Line:	144
+	; >>>>> printString("% >>>>>\r\n"); 
+	mov	ax, L_lab5app_45
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	146
+	; >>>>> YKEnterMutex(); 
+	call	YKEnterMutex
+	; >>>>> Line:	147
+	; >>>>> YKCtxSwCount = 0; 
+	mov	word [YKCtxSwCount], 0
+	; >>>>> Line:	148
+	; >>>>> YKIdleCount = 0; 
+	mov	word [YKIdleCount], 0
+	; >>>>> Line:	149
+	; >>>>> YKExitMutex(); 
+	call	YKExitMutex
+L_lab5app_49:
+	jmp	L_lab5app_48
+L_lab5app_50:
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_46:
+	push	bp
+	mov	bp, sp
+	sub	sp, 8
+	jmp	L_lab5app_47
+	ALIGN	2
+main:
+	; >>>>> Line:	154
+	; >>>>> { 
+	jmp	L_lab5app_52
+L_lab5app_53:
+	; >>>>> Line:	155
+	; >>>>> YKInitialize(); 
+	call	YKInitialize
+	; >>>>> Line:	158
+	; >>>>> PSemPtr = YKSemCreate(1); 
+	mov	ax, 1
+	push	ax
+	call	YKSemCreate
+	add	sp, 2
+	mov	word [PSemPtr], ax
+	; >>>>> Line:	159
+	; >>>>> SSemPtr = YKSemCreate(0); 
+	xor	ax, ax
+	push	ax
+	call	YKSemCreate
+	add	sp, 2
+	mov	word [SSemPtr], ax
+	; >>>>> Line:	160
+	; >>>>> WSemPtr = YKSemCreate(0); 
+	xor	ax, ax
+	push	ax
+	call	YKSemCreate
+	add	sp, 2
+	mov	word [WSemPtr], ax
+	; >>>>> Line:	161
+	; >>>>> NSemPtr = YKSemCreate(0); 
+	xor	ax, ax
+	push	ax
+	call	YKSemCreate
+	add	sp, 2
+	mov	word [NSemPtr], ax
+	; >>>>> Line:	162
+	; >>>>> YKNewTask(TaskStat, (void *) &T 
+	mov	al, 30
+	push	ax
+	mov	ax, (TaskStatStk+1024)
+	push	ax
+	mov	ax, TaskStat
+	push	ax
+	call	YKNewTask
+	add	sp, 6
+	; >>>>> Line:	164
+	; >>>>> YKRun(); 
+	call	YKRun
+	mov	sp, bp
+	pop	bp
+	ret
+L_lab5app_52:
+	push	bp
+	mov	bp, sp
+	jmp	L_lab5app_53
 	ALIGN	2
 L_lab5app_1:
 	TIMES	512 db 0
@@ -15,8 +554,6 @@ TaskStatStk:
 	TIMES	1024 db 0
 TaskPRMStk:
 	TIMES	1024 db 0
-YKSEM:
-	TIMES	2 db 0
 PSemPtr:
 	TIMES	2 db 0
 SSemPtr:

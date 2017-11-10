@@ -223,6 +223,7 @@ void YKSemPend(YKSEM *semaphore)
 	else
 	{
 		//(semaphore->addrWaitingOnSem) = YKRdyList;
+		(semaphore->value)--;
 		YKRdyList->pendingSem = semaphore; //set the pending sem of this task equal to the address of this semaphore
 		//the calling task is suspended by the kernel until the sem is available
 		removeFirstTCBFromRdyList();
@@ -235,9 +236,10 @@ void YKSemPend(YKSEM *semaphore)
 void YKSemPost(YKSEM *semaphore)
 {
 	TCBptr tmp;
+	TCBptr tmp2;
 	//printString("posting semaphore at address ");
 	//printInt((int)semaphore);
-	//printNewLine();	
+	//printNewLine();
 	//printLists();
 	//increment the value of semaphore
 	(semaphore->value)++;
@@ -248,7 +250,7 @@ void YKSemPost(YKSEM *semaphore)
 		moveTCBToRdyList((TCBptr) (semaphore->addrWaitingOnSem));
 		semaphore->addrWaitingOnSem = 0;
 	}*/
-	
+
 	//now iterate through the suspend list
 	//check the semaphore we are posting against the pendingSem addresses of each task in the susp list
 		//if they match, put that task back into the ready list
@@ -261,18 +263,23 @@ void YKSemPost(YKSEM *semaphore)
 		//	printString("Moving a task in post to the ready list: priority = ");
 		//	printInt(tmp->priority);
 		//	printNewLine();
-			moveTCBToRdyList(tmp);
-		}
+		tmp2 = tmp;
 		tmp = tmp->next;
+			moveTCBToRdyList(tmp2);
+		}
+		else
+		{
+			tmp = tmp->next;
+		}
 	}
 //	printString("ISRCallDepth = ");
 //	printInt(ISRCallDepth);
 //	printNewLine();
 	if (ISRCallDepth <= 1)
-	{	
+	{
 		//printString("Calling the scheduler\n\r");
 		//call the scheduler bc this was called from task code
 		YKScheduler();
 	}
 	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
-}	
+}

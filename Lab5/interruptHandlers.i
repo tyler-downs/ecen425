@@ -58,6 +58,10 @@ struct context_type
  unsigned int flags;
 };
 
+typedef struct {
+ int value;
+} YKSEM;
+
 typedef struct taskblock *TCBptr;
 
 typedef struct taskblock
@@ -69,6 +73,7 @@ typedef struct taskblock
  TCBptr next;
  TCBptr prev;
  unsigned ID;
+ YKSEM* pendingSem;
 } TCB;
 
 
@@ -102,11 +107,7 @@ extern unsigned int YKIdleCount;
 extern unsigned int YKTickNum;
 extern unsigned int running_flag;
 extern TCBptr lastRunningTask;
-
-typedef struct YKSemaphore {
- int value;
-}YKSEM;
-
+# 20 "yakk.h"
 void YKIdleTask();
 static int IdleStk[256];
 
