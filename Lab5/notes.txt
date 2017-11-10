@@ -1,7 +1,41 @@
-YKSemCreate(int)
-	Takes an integer argument:
-		The number of remaining pends that the semaphore can do
+Bug:
+
+Currently, the RTOS will get to the punctuation task, output the 
+'"', and then post to the Word semaphore, WSemPtr. At the very beginning of the 
+program, since the word task is a higher priority than the others, the 
+YKSemPend function already took place, realized the value for that semaphore was
+0, removed itself from the ready list, and called the scheduler. The YKSemPend
+function also recorded into the running task's TCB which semaphore it was pending
+on. 
+
+However, when the Word semaphore posts and becomes available, instead of resuming
+the function call where it left off (after its call to the scheduler), it started 
+the YKSemPend method over from the beginning. I do not know why this is happening. 
+But it prints out "pending semaphore at address" and all that, which means it is
+running from the beginning of the function and not from where it left off when 
+it pended. 
+
+The idea behind pending on a semaphore is the following: the scheduler will be
+called, and when that semaphore becomes available again, it will move all of
+the TCBs that were pending on it back into the ready list. The highest priority of
+these will be chosen by the dispatcher and executed, starting at the spot it left 
+off when it pended on the semaphore. 
+
+However, this is not happening in our code. When our code runs, the tasks print
+out all of the punctuation in the correct order, but they do not print anything else.
+
+ex.
+
+...
+
+TICK 7
+
+",!"
+",!"
+",!"
+",!"
+",!"
+...
 
 
-YKSemPost()
-	Adds 
+

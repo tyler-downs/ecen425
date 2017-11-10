@@ -114,11 +114,13 @@ void YKDelayTask(unsigned count)
 
 void YKEnterISR(void)
 {
+//	printString("INC\n\r");
 	ISRCallDepth++;
 }
 
 void YKExitISR(void)
 {
+//	printString("DEC\n\r");
 	ISRCallDepth--;
 	if (ISRCallDepth == 0)
 		YKScheduler();
@@ -207,18 +209,16 @@ YKSEM* YKSemCreate(int initialValue)
 //called only from task code
 void YKSemPend(YKSEM *semaphore)
 {
-	printString("pending semaphore at address ");
-	printInt((int)semaphore);
-	//printString(", waiting on task at ");
-	//printInt((int)(semaphore->addrWaitingOnSem));
-	printNewLine();
-	printLists();
+	//printString("pending semaphore at address ");
+	//printInt((int)semaphore);
+	//printNewLine();
+	//printLists();
 	//if semaphore->value > 0
 	if (semaphore->value > 0)
 	{
 		//decrement semaphore value and we're done
 		(semaphore->value)--;
-		printString("Decremented semaphore during pend\n\r");
+	//	printString("Decremented semaphore during pend\n\r");
 	}
 	else
 	{
@@ -235,12 +235,10 @@ void YKSemPend(YKSEM *semaphore)
 void YKSemPost(YKSEM *semaphore)
 {
 	TCBptr tmp;
-	printString("posting semaphore at address ");
-	printInt((int)semaphore);
-	//printString(", waiting on task at ");
-        //printInt((int)(semaphore->addrWaitingOnSem));
-	printNewLine();	
-	printLists();
+	//printString("posting semaphore at address ");
+	//printInt((int)semaphore);
+	//printNewLine();	
+	//printLists();
 	//increment the value of semaphore
 	(semaphore->value)++;
 	//if any suspended tasks are waiting on this semaphoire
@@ -255,15 +253,24 @@ void YKSemPost(YKSEM *semaphore)
 	//check the semaphore we are posting against the pendingSem addresses of each task in the susp list
 		//if they match, put that task back into the ready list
 	tmp = YKSuspList;
-	while(tmp->next != NULL)
+	while(tmp != NULL)
 	{
-		if (tmp->pendingSem == semaphore)
+		//printString("Iterating through the YKSuspList\n\r");
+		if (tmp->pendingSem == semaphore){
+			tmp->pendingSem = 0;
+		//	printString("Moving a task in post to the ready list: priority = ");
+		//	printInt(tmp->priority);
+		//	printNewLine();
 			moveTCBToRdyList(tmp);
+		}
 		tmp = tmp->next;
 	}
-
-	if (ISRCallDepth <= 0)
-	{
+//	printString("ISRCallDepth = ");
+//	printInt(ISRCallDepth);
+//	printNewLine();
+	if (ISRCallDepth <= 1)
+	{	
+		//printString("Calling the scheduler\n\r");
 		//call the scheduler bc this was called from task code
 		YKScheduler();
 	}
