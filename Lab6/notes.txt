@@ -1,0 +1,62 @@
+Bug:
+
+Currently, the RTOS will get to the punctuation task, output the 
+'"', and then post to the Word semaphore, WSemPtr. At the very beginning of the 
+program, since the word task is a higher priority than the others, the 
+YKSemPend function already took place, realized the value for that semaphore was
+0, removed itself from the ready list, and called the scheduler. The YKSemPend
+function also recorded into the running task's TCB which semaphore it was pending
+on. 
+
+However, when the Word semaphore posts and becomes available, instead of resuming
+the function call where it left off (after its call to the scheduler), it started 
+the YKSemPend method over from the beginning. I do not know why this is happening. 
+But it prints out "pending semaphore at address" and all that, which means it is
+running from the beginning of the function and not from where it left off when 
+it pended. 
+
+The idea behind pending on a semaphore is the following: the scheduler will be
+called, and when that semaphore becomes available again, it will move all of
+the TCBs that were pending on it back into the ready list. The highest priority of
+these will be chosen by the dispatcher and executed, starting at the spot it left 
+off when it pended on the semaphore. 
+
+However, this is not happening in our code. When our code runs, the tasks print
+out all of the punctuation in the correct order, but they do not print anything else.
+
+ex.
+
+...
+
+TICK 7
+
+",!"
+",!"
+",!"
+",!"
+",!"
+...
+
+
+The issue above has been replaced with another. The RTOS now gets to the words
+and prints them out. However, it prints out the words too may times, prints the
+spaces in the wrong places, and doesn't get a chance to print the correct
+punctuation before reprinting the words. 
+
+We will have to trace through it to figure out where the semaphores are going 
+awry. 
+
+Important note: when semaphores were posting, the scheduler wasn't being called
+because I was checking first to see if the ISRCallDepth was less than or equal
+to 0 (which is what they tell you to do). However, the call depth was 1 when 
+the pending and posting was happening. So I changed the check so that it will 
+call the scheduler when the ISRCallDepth is less that or equal to 0.
+
+I'm not sure if this was the best idea, but it seemed to fix the problem of the
+scheduler never ever being called on a post. It may have introduced new problems
+into the mix though. They tell you specifically in the description that 
+if the post function is called from an ISR, you should not call the scheduler
+inside the post function because it will be called eventually in exitISR.
+However, the call depth was 1 when the post function was called, even though
+I dont remember ever putting the post function in any ISRs. This doesn't
+make sense to me.
