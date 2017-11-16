@@ -109,9 +109,10 @@ void YKDelayTask(unsigned count)
 
 	//grab the running task at the top of the ready list
 	//YKRdyList.state = suspended;
+	YKEnterMutex();
 	YKRdyList->delay = count;
 	removeFirstTCBFromRdyList(); //move to suspended list
-
+	YKExitMutex();
 	//print the ready list (for debug)
 	//printLists();
 	YKScheduler();

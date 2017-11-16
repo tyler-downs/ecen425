@@ -3,7 +3,7 @@
 #include "lab6defs.h"
 
 
-//extern int KeyBuffer;
+extern int KeyBuffer;
 //extern YKSEM* NSemPtr;
 static int tickCount = 0;
 
@@ -28,8 +28,15 @@ void tickInterruptHandler()
 	YKTickHandler();
 	*/
 
+
 	static int next = 0;
 	static int data = 0;
+
+	if (KeyBuffer == 'l')
+	{
+		printLists();
+		KeyBuffer = 'a';
+	}
 
 	YKTickHandler();
 
