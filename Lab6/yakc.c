@@ -1,6 +1,7 @@
 #include "yakk.h"
 #include "clib.h"
 
+
 unsigned int YKIdleCount = 0;
 unsigned int running_flag = 0; //0 means not running, 1 means running
 unsigned int ISRCallDepth = 0;
@@ -9,8 +10,11 @@ unsigned int YKCtxSwCount = 0;
 unsigned int YKTickNum = 0;
 unsigned int firstTime = 1;
 unsigned int currentNumSemaphores = 0; //globally track the current num of semaphores
+unsigned int currentNumQueues = 0;
 
 YKSEM SemArray[MAX_NUM_SEMAPHORES];
+
+YKQ QueueArray[MAX_NUM_QUEUES];
 
 //ARE THESE THE VALUES WE WANT?
 struct context_type initContext = {
@@ -166,14 +170,9 @@ void YKTickHandler(void)
 	TCBptr tmp;
 	TCBptr tmp2;
 	tmp  = YKSuspList;
-	//printString("tmp = YKSusplist: ");
-	//printInt((int)tmp);
-	//printString("\ntmp->delay: ");
-	//printInt(tmp->delay);
-	printString("\n");
 
-	 while(tmp != NULL)
-	 {
+	while(tmp != NULL)
+	{
 			if (tmp->delay > 0)
 			{
 				(tmp->delay)--;
@@ -189,7 +188,7 @@ void YKTickHandler(void)
 			}
 			else
 				tmp = tmp->next;
-	 }
+	}
 	YKTickNum++;
 	//call user tick handler if exists
 }
@@ -242,20 +241,10 @@ void YKSemPost(YKSEM *semaphore)
 	TCBptr tmp;
 	TCBptr tmp2;
 	YKEnterMutex();
-	//printString("posting semaphore at address ");
-	//printInt((int)semaphore);
-	//printNewLine();
-	//printLists();
 	//increment the value of semaphore
 	(semaphore->value)++;
 	//if any suspended tasks are waiting on this semaphoire
 		//highest priority waiting task is made ready
-	/*if(semaphore->addrWaitingOnSem != 0)
-	{
-		moveTCBToRdyList((TCBptr) (semaphore->addrWaitingOnSem));
-		semaphore->addrWaitingOnSem = 0;
-	}*/
-
 	//now iterate through the suspend list
 	//check the semaphore we are posting against the pendingSem addresses of each task in the susp list
 		//if they match, put that task back into the ready list
@@ -265,9 +254,6 @@ void YKSemPost(YKSEM *semaphore)
 		//printString("Iterating through the YKSuspList\n\r");
 		if (tmp->pendingSem == semaphore){
 			tmp->pendingSem = 0;
-		//	printString("Moving a task in post to the ready list: priority = ");
-		//	printInt(tmp->priority);
-		//	printNewLine();
 		tmp2 = tmp;
 		tmp = tmp->next;
 			moveTCBToRdyList(tmp2);
@@ -277,12 +263,8 @@ void YKSemPost(YKSEM *semaphore)
 			tmp = tmp->next;
 		}
 	}
-//	printString("ISRCallDepth = ");
-//	printInt(ISRCallDepth);
-//	printNewLine();
 	if (ISRCallDepth <= 0)
 	{
-		//printString("Calling the scheduler\n\r");
 		//call the scheduler bc this was called from task code
 		YKScheduler();
 	}
@@ -292,4 +274,77 @@ void YKSemPost(YKSEM *semaphore)
 	}
 	//else dont worry about it, it was called from an ISR and sched will be called in YKExitISR
 	YKExitMutex();
+}
+
+YKQ* YKQCreate(void **start, unsigned size)
+{
+		YKQ* queue;
+		YKEnterMutex();
+		queue = &(QueueArray[currentNumQueues]);
+		currentNumQueues++;
+		queue->qArray = start;
+		queue->qStart = start;
+		queue->qEnd = start;
+		queue->qMaxSize = size;
+		YKExitMutex();
+		return queue;
+}
+
+//This function removes the oldest message from the indicated message queue if it is non-empty.
+void *YKQPend(YKQ *queue)
+{
+		//if queue is empty, suspend the task until a message becomes available
+		//if not, just return the oldest element in the queue
+		YKEnterMutex();
+		if (!qIsEmpty(queue))
+		{
+				return qRemove(queue);
+		}
+		else
+		{
+				YKRdyList->pendingQueue = queue;
+				removeFirstTCBFromRdyList();
+				YKScheduler();
+		}
+		YKExitMutex();
+}
+
+int YKQPost(YKQ *queue, void *msg)
+{
+		TCBptr tmp;
+		TCBptr tmp2;
+		//places the message into the queue
+		//check if the queue is full, if it is, return 0, if not, put message in queue and return 1
+		YKEnterMutex();
+		if (qIsFull(queue))
+		{
+				return 0;
+		}
+		else
+		{
+				qInsert(queue, msg);
+				//now go through the susp list and put the tasks that were waiting back into the ready list
+				tmp = YKSuspList;
+				while(tmp != NULL)
+				{
+					if (tmp->pendingQueue == queue)
+					{
+							tmp->pendingQueue = 0;
+							tmp2 = tmp;
+							tmp = tmp->next;
+							moveTCBToRdyList(tmp2);
+					}
+					else
+					{
+						tmp = tmp->next;
+					}
+				}
+				if (ISRCallDepth <= 0)
+				{
+					//call the scheduler bc this was called from task code
+					YKScheduler();
+				}
+				return 1;
+		}
+		YKExitMutex();
 }

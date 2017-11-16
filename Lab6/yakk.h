@@ -1,6 +1,5 @@
 #include "linkedList.h"
 
-
 #define LOWEST_PRIORITY 100 //the lowest possible task priority (idle task)
 
 //extern declaratoins for things defined in yakc.c
@@ -52,3 +51,9 @@ YKSEM* YKSemCreate(int initialValue);
 void YKSemPend(YKSEM *semaphore);
 
 void YKSemPost(YKSEM *semaphore);
+
+YKQ* YKQCreate(void **start, unsigned size);
+
+void *YKQPend(YKQ *queue);
+
+int YKQPost(YKQ *queue, void *msg);

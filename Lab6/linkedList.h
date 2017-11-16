@@ -1,4 +1,5 @@
 #include "yaku.h"
+#include "queue.h"
 
 #define DEBUG //comment out to not include debug code
 
@@ -27,6 +28,8 @@ typedef struct {
 	int value;
 } YKSEM;
 
+
+
 typedef struct taskblock *TCBptr;
 //typedef struct taskblock *TCBptr;
 typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
@@ -39,6 +42,7 @@ typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
 	TCBptr prev;
 	unsigned ID;
 	YKSEM* pendingSem; //indicates what semaphore put the task in the susp list. if none, 0
+	YKQ* pendingQueue; //indicates what queue the task is waiting for. if none, 0
 } TCB;
 
 

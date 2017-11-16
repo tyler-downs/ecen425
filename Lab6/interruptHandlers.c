@@ -1,9 +1,15 @@
 #include "clib.h"
 #include "yakk.h"
+#include "lab6defs.h"
 
-extern int KeyBuffer;
-extern YKSEM* NSemPtr;
-static int tickCount = 0;
+
+//extern int KeyBuffer;
+//extern YKSEM* NSemPtr;
+//static int tickCount = 0;
+
+extern YKQ *MsgQPtr;
+extern struct msg MsgArray[];
+extern int GlobalFlag;
 
 void resetInterruptHandler()
 {
@@ -12,6 +18,7 @@ void resetInterruptHandler()
 
 void tickInterruptHandler()
 {
+	/*
 	tickCount++;
 	printNewLine();
 	printString("TICK ");
@@ -19,33 +26,25 @@ void tickInterruptHandler()
 	printNewLine();
 	//call tickHandler
 	YKTickHandler();
+	*/
+
+	static int next = 0;
+	static int data = 0;
+
+	/* create a message with tick (sequence #) and pseudo-random data */
+	MsgArray[next].tick = YKTickNum;
+	data = (data + 89) % 100;
+	MsgArray[next].data = data;
+
+	if (YKQPost(MsgQPtr, (void *) &(MsgArray[next])) == 0)
+			printString("  TickISR: queue overflow! \n");
+	else if (++next >= MSGARRAYSIZE)
+			next = 0;
+
+	YKTickHandler();
 }
 
 void keyboardInterruptHandler()
 {
-	int count;
-	printNewLine();
-	if (KeyBuffer == 'd')
-	{
-		printString("DELAY KEY PRESSED");
-		count = 0;
-		while (count < 5000)
-		{
-			count++;
-		}
-		printNewLine();
-		printString("DELAY COMPLETE");
-		printNewLine();
-	}
-	else if (KeyBuffer == 'p')
-	{
-		YKSemPost(NSemPtr);
-	}
-	else
-	{
-		printString("KEYPRESS (");
-		printChar(KeyBuffer);
-		printString(") IGNORED");
-		printNewLine();
-	}
+		GlobalFlag = 1;
 }

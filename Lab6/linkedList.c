@@ -17,6 +17,7 @@ TCBptr createTCB(void *stackptr, int priority, struct context_type context)
 	TCBarray[currentListSize].context = context;
 	TCBarray[currentListSize].ID = currentListSize;
 	TCBarray[currentListSize].pendingSem = 0;
+	TCBarray[currentListSize].pendingQueue = 0;
 	currentListSize++;
 	return &(TCBarray[currentListSize-1]);
 }
