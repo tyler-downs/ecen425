@@ -1,5 +1,6 @@
 #include "yakk.h"
 #include "clib.h"
+#include "lab6defs.h"
 
 
 unsigned int YKIdleCount = 0;
@@ -293,26 +294,36 @@ YKQ* YKQCreate(void **start, unsigned size)
 //This function removes the oldest message from the indicated message queue if it is non-empty.
 void *YKQPend(YKQ *queue)
 {
+		void* returnVal;
+		struct msg* stuff;
 		//if queue is empty, suspend the task until a message becomes available
 		//if not, just return the oldest element in the queue
 		YKEnterMutex();
-		if (!qIsEmpty(queue))
+		if (qIsEmpty(queue))
 		{
-				return qRemove(queue);
-		}
-		else
-		{
+			//	printString("Delaying task in pend until queue has message\n\r");
 				YKRdyList->pendingQueue = queue;
 				removeFirstTCBFromRdyList();
 				YKScheduler();
 		}
+
+
+		//printString("Removing element from queue in pend: ");
+		returnVal = qRemove(queue);
+		//stuff = (struct msg*) returnVal;
+		//printInt(stuff->tick);
+		//printString(", ");
+		//printInt(stuff->data);
+		//printNewLine();
 		YKExitMutex();
+		return returnVal;
 }
 
 int YKQPost(YKQ *queue, void *msg)
 {
 		TCBptr tmp;
 		TCBptr tmp2;
+		struct msg* message;
 		//places the message into the queue
 		//check if the queue is full, if it is, return 0, if not, put message in queue and return 1
 		YKEnterMutex();
@@ -322,6 +333,12 @@ int YKQPost(YKQ *queue, void *msg)
 		}
 		else
 		{
+				//printString("Posting message to queue: ");
+				//message = (struct msg*) msg;
+				//printInt(message->tick);
+				//printString(", ");
+				//printInt(message->data);
+				//printNewLine();
 				qInsert(queue, msg);
 				//now go through the susp list and put the tasks that were waiting back into the ready list
 				tmp = YKSuspList;

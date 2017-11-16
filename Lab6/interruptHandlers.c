@@ -5,7 +5,7 @@
 
 //extern int KeyBuffer;
 //extern YKSEM* NSemPtr;
-//static int tickCount = 0;
+static int tickCount = 0;
 
 extern YKQ *MsgQPtr;
 extern struct msg MsgArray[];
@@ -31,6 +31,8 @@ void tickInterruptHandler()
 	static int next = 0;
 	static int data = 0;
 
+	YKTickHandler();
+
 	/* create a message with tick (sequence #) and pseudo-random data */
 	MsgArray[next].tick = YKTickNum;
 	data = (data + 89) % 100;
@@ -41,7 +43,7 @@ void tickInterruptHandler()
 	else if (++next >= MSGARRAYSIZE)
 			next = 0;
 
-	YKTickHandler();
+	//YKTickHandler();
 }
 
 void keyboardInterruptHandler()
