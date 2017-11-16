@@ -1,0 +1,11 @@
+Bond Denhalter
+Tyler Downs
+
+Lab 6
+
+A bug we had was we were missing tick number -1. This was a simple fix of running the Tick Handler (which increments YKTickNum) before putting the messages on the queue in the tick interrupt handler.
+
+We were getting messages that we were missing ticks after the initial 7 were correctly read. We determined that when YKQPend was delaying a task and calling the scheduler, on return it did not pop a message off the queue and return it. After fixing that it worked great.
+
+
+The lab took us about 5 hours.
