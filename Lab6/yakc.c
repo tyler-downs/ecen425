@@ -330,6 +330,7 @@ int YKQPost(YKQ *queue, void *msg)
 		YKEnterMutex();
 		if (qIsFull(queue))
 		{
+				YKExitMutex();
 				return 0;
 		}
 		else
@@ -362,7 +363,7 @@ int YKQPost(YKQ *queue, void *msg)
 					//call the scheduler bc this was called from task code
 					YKScheduler();
 				}
+				YKExitMutex();
 				return 1;
 		}
-		YKExitMutex();
 }
