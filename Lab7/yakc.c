@@ -330,6 +330,7 @@ int YKQPost(YKQ *queue, void *msg)
 		YKEnterMutex();
 		if (qIsFull(queue))
 		{
+				YKExitMutex();
 				return 0;
 		}
 		else
@@ -362,28 +363,7 @@ int YKQPost(YKQ *queue, void *msg)
 					//call the scheduler bc this was called from task code
 					YKScheduler();
 				}
+				YKExitMutex();
 				return 1;
 		}
-		YKExitMutex();
 }
-
-YKEVENT *YKEventCreate(unsigned initialValue)
-{
-	return (YKEVENT) 0;
-}
-
-unsigned YKEventPend(YKEVENT* event, unsigned eventMask, int waitMode)
-{
-	return 0;
-}
-
-void YKEventSet(YKEVENT* event, unsigned eventMask)
-{
-
-}
-
-void YKEventReset(YKEVENT* event, unsigned eventMask)
-{
-
-}
-
