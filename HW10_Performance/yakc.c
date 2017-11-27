@@ -330,6 +330,8 @@ int YKQPost(YKQ *queue, void *msg)
 		YKEnterMutex();
 		if (qIsFull(queue))
 		{
+			//DO I NEED TO ADD HERE YKExitMutex(); ????????????????? TODO TODO TODO
+			//I CAN JUST PUT RETURN 0 AT THE END AFTER WHERE YKEXITMUTEX() ALREADY IS...
 				return 0;
 		}
 		else
