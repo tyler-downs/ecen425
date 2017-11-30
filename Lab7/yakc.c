@@ -1,7 +1,5 @@
 #include "yakk.h"
 #include "clib.h"
-#include "lab6defs.h"
-
 
 unsigned int YKIdleCount = 0;
 unsigned int running_flag = 0; //0 means not running, 1 means running
@@ -12,10 +10,11 @@ unsigned int YKTickNum = 0;
 unsigned int firstTime = 1;
 unsigned int currentNumSemaphores = 0; //globally track the current num of semaphores
 unsigned int currentNumQueues = 0;
+unsigned int currentNumEvents = 0;
 
 YKSEM SemArray[MAX_NUM_SEMAPHORES];
-
 YKQ QueueArray[MAX_NUM_QUEUES];
+YKEVENT EventArray[MAX_NUM_EVENTS];
 
 //ARE THESE THE VALUES WE WANT?
 struct context_type initContext = {
@@ -366,4 +365,202 @@ int YKQPost(YKQ *queue, void *msg)
 				YKExitMutex();
 				return 1;
 		}
+}
+
+YKEVENT *YKEventCreate(unsigned initialValue)
+{
+	YKEVENT* event;
+
+	if (currentNumEvents > MAX_NUM_EVENTS)
+	{
+		printString("ERROR: MAXIMUM NUMBER OF EVENTS EXCEEDED");
+		return NULL;
+	}
+
+	YKEnterMutex();
+	event = &(EventArray[currentNumEvents]);
+	*event = initialValue;
+	currentNumEvents++;
+	YKExitMutex();
+	return event;
+}
+
+unsigned YKEventPend(YKEVENT* event, unsigned eventMask, int waitMode)
+{
+	TCBptr tmp;
+	//printString("\n\r--------YK Event Pend ------------\n\r");
+	YKEnterMutex();
+	switch (waitMode) {
+		case WAIT_FOR_ALL:
+			if ((*event & eventMask) != eventMask) //if every bit in the mask is not set
+			{
+				//printString("\n\r------waiting for all but not every bit is set--------\n\r");
+				//set waiting information
+				tmp = YKRdyList;
+				tmp->pendingEventGroup = event;
+				tmp->pendingEventFlags = eventMask;
+				tmp->eventWaitMode = waitMode;
+
+				removeFirstTCBFromRdyList(); //block this task
+				YKScheduler();
+				YKExitMutex();
+				// printString("\n\r-----returning ");
+				// printInt(*event);
+				// printString(" ---------\n\r");
+				return *event; //return the current value
+			}
+			else //if every bit in the mask is set
+			{
+				// printString("\n\r------waiting for all and every bit is set--------\n\r");
+				// YKExitMutex();
+				// printString("\n\r-----returning ");
+				// printInt(*event);
+				// printString(" ---------\n\r");
+				return *event; //return the current value
+			}
+			break;
+		case WAIT_FOR_ANY:
+			if ((*event & eventMask) == 0) //if none of the bits in the mask are set
+			{
+			//	printString("\n\r------waiting for any but no bits set--------\n\r");
+				//set waiting information
+				tmp = YKRdyList;
+				tmp->pendingEventGroup = event;
+				tmp->pendingEventFlags = eventMask;
+				tmp->eventWaitMode = waitMode;
+				removeFirstTCBFromRdyList(); //block this task
+				YKScheduler();
+				YKExitMutex();
+				// printString("\n\r-----returning ");
+				// printInt(*event);
+				// printString(" ---------\n\r");
+				return *event; //return the current value
+			}
+			else //if any of the bits in the mask are set
+			{
+				// printString("\n\r------waiting for any but and at least one bit is set--------\n\r");
+				// YKExitMutex();
+				// printString("\n\r-----returning ");
+				// printInt(*event);
+				// printString(" ---------\n\r");
+				return *event; //return the current value
+			}
+			break;
+		default:
+			printString("\n\rERROR: INVALID WAIT MODE\n\r");
+			return NULL;
+			break;
+	}
+
+	YKExitMutex();
+}
+
+void YKEventSet(YKEVENT* event, unsigned eventMask)
+{
+
+	int taskMadeReady; //flag to set to true if any task is made ready
+	unsigned curFlags;
+	unsigned newFlags;
+	TCBptr tmp;
+	TCBptr tmp2;
+
+	taskMadeReady = 0;
+
+	// printString("\n\r-----YKEventSet, mask = ");
+	//  printInt(eventMask);
+	//  printString("\nEvent is currently at: ");
+	//  printInt(*event);
+	 //printString(" --------\n\rLists:\n\r");
+	// printLists();
+	// printString("\n\n\rTCBs:\n\r");
+	// printTCBs();
+
+	YKEnterMutex();
+	//set the bits in the mask
+	curFlags = *event;
+	newFlags = (curFlags & ~eventMask) | (eventMask);
+	*event = newFlags;
+	// printString("\nsetting event to: ");
+	// printInt(newFlags);
+	// printString("\nevent just set to: ");
+	// printInt(*event);
+	// printNewLine();
+
+	//check for all tasks that were waiting on this event
+	tmp = YKSuspList;
+	while(tmp != NULL)
+	{
+		if ((tmp->pendingEventGroup == event) && (tmp->pendingEventGroup != 0)) //if the task is waiting on this event group
+		{
+				if (tmp->eventWaitMode == WAIT_FOR_ALL) //if this task is waiting for all events in the group
+				{
+						if ((*event & (tmp->pendingEventFlags)) == (tmp->pendingEventFlags)) //if every bit in the mask is set
+						{
+								tmp->pendingEventGroup = NULL; //no longer pending
+								tmp->pendingEventFlags = 0;
+								tmp->eventWaitMode = -1;
+								tmp2 = tmp;
+								tmp = tmp->next;
+								//printString("\nMoving TCB to ready list with priority: ");
+								//printInt(tmp2->priority);
+								printNewLine();
+								moveTCBToRdyList(tmp2);		//make task ready
+								taskMadeReady = 1; //set boolean to true
+						}
+						else
+						{
+								tmp = tmp->next;
+						}
+				}
+				else //if the task is waiting for any event in the group
+				{
+						if ((*event & (tmp->pendingEventFlags)) != 0) //if any of the bits in the mask are set
+						{
+								tmp->pendingEventGroup = NULL; //no longer pending
+								tmp->pendingEventFlags = 0;
+								tmp->eventWaitMode = -1;
+								tmp2 = tmp;
+								tmp = tmp->next;
+								//printString("\nMoving TCB to ready list with priority: ");
+								//printInt(tmp2->priority);
+								printNewLine();
+								moveTCBToRdyList(tmp2);		//make task ready
+								taskMadeReady = 1; //set boolean to true
+						}
+						else
+						{
+								tmp = tmp->next;
+						}
+				}
+		}
+		else
+			tmp = tmp->next;
+	}
+	//if not in ISR and task has been made ready, call scheduler
+	if (taskMadeReady && (ISRCallDepth <= 0))
+	{
+		printString("\n\r----Calling Scheduler from YKEVentSet------\n\r");
+		YKScheduler();
+	}
+	YKExitMutex();
+}
+
+void YKEventReset(YKEVENT* event, unsigned eventMask)
+{
+	unsigned curVal;
+	unsigned newVal;
+
+	// printString("\n-----YKEventReset-----\nEvent Mask = ");
+	// printInt(eventMask);
+	// printString("\nCurrent event value: ");
+	// printInt(*event);
+
+	YKEnterMutex();
+	curVal = *event;
+	newVal = (curVal & ~eventMask) | (0 & eventMask); //set the bits in the event mask to 0
+	// printString("\nNew value: ");
+	// printInt(newVal);
+	// printNewLine();
+	*event = newVal;
+	YKExitMutex();
 }

@@ -1,6 +1,17 @@
 #include "linkedList.h"
 
+/**
+See http://ece425web.groups.et.byu.net/stable/labs/kernel.html for descriptions of the functions
+**/
+
 #define LOWEST_PRIORITY 100 //the lowest possible task priority (idle task)
+
+//these are the two waiting modes for events
+#define WAIT_FOR_ALL 1
+#define WAIT_FOR_ANY 0
+
+#define EVENT_WAIT_ANY WAIT_FOR_ANY //it was called different in the app code
+#define EVENT_WAIT_ALL WAIT_FOR_ALL
 
 //extern declaratoins for things defined in yakc.c
 extern unsigned int YKCtxSwCount;

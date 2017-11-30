@@ -28,7 +28,7 @@ typedef struct {
 	int value;
 } YKSEM;
 
-typedef int YKEVENT;
+typedef unsigned YKEVENT; //16 bits that represent event flags
 
 
 typedef struct taskblock *TCBptr;
@@ -44,6 +44,9 @@ typedef struct taskblock //38 bytes in total (26<-context + 12<-other stuff)
 	unsigned ID;
 	YKSEM* pendingSem; //indicates what semaphore put the task in the susp list. if none, 0
 	YKQ* pendingQueue; //indicates what queue the task is waiting for. if none, 0
+	YKEVENT* pendingEventGroup; //which event group the task is waiting on
+	unsigned pendingEventFlags; //which flags in the event group the task is waiting on
+	int eventWaitMode; //WAIT_FOR_ALL or WAIT_FOR_ANY
 } TCB;
 
 

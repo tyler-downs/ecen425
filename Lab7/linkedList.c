@@ -18,6 +18,9 @@ TCBptr createTCB(void *stackptr, int priority, struct context_type context)
 	TCBarray[currentListSize].ID = currentListSize;
 	TCBarray[currentListSize].pendingSem = 0;
 	TCBarray[currentListSize].pendingQueue = 0;
+	TCBarray[currentListSize].pendingEventGroup = 0;
+	TCBarray[currentListSize].pendingEventFlags = 0;
+	TCBarray[currentListSize].eventWaitMode = -1;
 	currentListSize++;
 	return &(TCBarray[currentListSize-1]);
 }
@@ -146,8 +149,28 @@ void printTCB(TCBptr t)
 	printInt(t->priority);
 	printString("\n  Delay: ");
 	printInt(t->delay);
+	printString("\n Pending Sem: ");
+	printWord((int) t->pendingSem);
+	printString("\n Pending Sem value: ");
+	printInt((t->pendingSem->value));
+	printString("\n Pending Queue: ");
+	printWord((int) t->pendingQueue);
+	printString("\n Pending Event Group: ");
+	printWord((int) t->pendingEventGroup);
+	printString("\n Pending Event Group value: ");
+	printInt((int) *(t->pendingEventGroup));
+	printString("\n Pending Event flags: ");
+	printInt(t->pendingEventFlags);
+	printString("\n Event wait mode: ");
+	printInt(t->eventWaitMode);
 	printContext(t->context);
 }
+
+YKSEM* pendingSem; //indicates what semaphore put the task in the susp list. if none, 0
+YKQ* pendingQueue; //indicates what queue the task is waiting for. if none, 0
+YKEVENT* pendingEventGroup; //which event group the task is waiting on
+unsigned pendingEventFlags; //which flags in the event group the task is waiting on
+int eventWaitMode; //WAIT_FOR_ALL or WAIT_FOR_ANY
 
 void printTCBs()
 {
