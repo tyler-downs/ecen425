@@ -1,0 +1,13 @@
+Bond Denhalter
+Tyler Downs
+
+425 Lab 7
+
+Bugs: In YKEventPend we did not set the TCB information for the tasks we removed from the ready list,
+	so they were not found in YKEventPost.
+	
+	In YKEventSet we had an error in our code to determine the new mask, so it wasn't setting all the
+	bits it should have.
+	
+
+Time: This lab took us about 5.5 hours.
