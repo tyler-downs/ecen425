@@ -14,11 +14,11 @@ InterruptVectorTable:
         dd      reset_isr ; Reset               ; Int 08h (IRQ 0)
         dd      tick_isr ; Tick                ; Int 09h (IRQ 1)
         dd      keyboard_isr ; Keyboard            ; Int 0Ah (IRQ 2)
-        dd      0 ; Simptris Game Over  ; Int 0Bh (IRQ 3)
-        dd      0 ; Simptris New Piece  ; Int 0Ch (IRQ 4)
-        dd      0 ; Simptris Received   ; Int 0Dh (IRQ 5)
-        dd      0 ; Simptris Touchdown  ; Int 0Eh (IRQ 6)
-        dd      0 ; Simptris Clear      ; Int 0Fh (IRQ 7)
+        dd      0 ; simptris_game_over  ; Int 0Bh (IRQ 3)
+        dd      0 ; simptris_new_piece ; Int 0Ch (IRQ 4)
+        dd      0 ; simptris_received   ; Int 0Dh (IRQ 5)
+        dd      0 ; simptris_touchdown  ; Int 0Eh (IRQ 6)
+        dd      0 ; simptris_clear      ; Int 0Fh (IRQ 7)
         ; Software Interrupts:
         dd      0 ; Reserved (PC BIOS)  ; Int 10h
         dd      0                       ; Int 11h
@@ -374,7 +374,7 @@ SR_ulshl:
 	mov    ax, [bp+6]	; pop loword(a)
 	mov    dx, [bp+8]	; pop hiword(a)
 	mov    cx, [bp+10]	; pop word(b)
-	
+
 	; LXLSH@
 	cmp    cl,10h
 	jnb    LSR_12
@@ -410,7 +410,7 @@ SR_lshr:	; N_LXRSH@
         mov    ax, [bp+6]	; pop loword(a)
 	mov    dx, [bp+8]	; pop hiword(a)
 	mov    cx, [bp+10]	; pop word(b)
-	
+
 	; LXRSH@
 	cmp    cl,10h
 	jnb    LSR_13
@@ -446,7 +446,7 @@ SR_ulshr:	; N_LXURSH@
         mov    ax, [bp+6]	; pop loword(a)
 	mov    dx, [bp+8]	; pop hiword(a)
 	mov    cx, [bp+10]	; pop word(b)
-	
+
 	; LXURSH@
 	cmp    cl,10h
 	jnb    LSR_14
@@ -482,7 +482,7 @@ SR_ulmul:
 	mov    cx, [bp+8]	; pop hiword(a)
 	mov    ax, [bp+10]	; pop loword(b)
 	mov    dx, [bp+12]	; pop hiword(b)
-	
+
 	xchg   si,ax
 	xchg   dx,ax
 	test   ax,ax
@@ -1108,4 +1108,3 @@ L_clib_83:
 	mov	bp, sp
 	sub	sp, 16
 	jmp	L_clib_84
-

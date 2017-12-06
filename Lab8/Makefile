@@ -5,7 +5,7 @@ lab8.bin:	lab8final.s
 		nasm lab8final.s -o lab8.bin -l lab8.lst
 
 lab8final.s:	clib.s simptris.s ISRs.s interruptHandlers.s linkedList.s yakc.s yaks.s queue.s lab8app.s 
-		cat clib.s simptris.s ISRs.s interruptHandlers.s linkedList.s yakc.s yaks.s queue.s lab8app.s > lab8final.s
+		cat clib.s simptris.s ISRs.s interruptHandlers.s linkedList.s yakc.s yaks.s queue.s lab8app.s  > lab8final.s
 
 interruptHandlers.s:	interruptHandlers.c
 		cpp interruptHandlers.c interruptHandlers.i
