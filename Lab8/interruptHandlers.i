@@ -180,19 +180,46 @@ void YKEventSet(YKEVENT* event, unsigned eventMask);
 
 void YKEventReset(YKEVENT* event, unsigned eventMask);
 # 3 "interruptHandlers.c" 2
-# 1 "lab7defs.h" 1
-# 15 "lab7defs.h"
-extern YKEVENT *charEvent;
-extern YKEVENT *numEvent;
+# 1 "lab8defs.h" 1
+# 38 "lab8defs.h"
+struct newPiece
+{
+    int id;
+    int orientation;
+    int type;
+    int column;
+};
+
+struct move
+{
+  int pieceID;
+  int moveType;
+  int direction;
+};
 # 4 "interruptHandlers.c" 2
 
 extern int KeyBuffer;
+extern int NewPieceID;
+extern int NewPieceType;
+extern int NewPieceOrientation;
+extern int NewPieceColumn;
+extern int ScreenBitMap0;
+extern int ScreenBitMap1;
+extern int ScreenBitMap2;
+extern int ScreenBitMap3;
+extern int ScreenBitMap4;
+extern int ScreenBitMap5;
 
+
+extern YKSEM* CmdRcvdSemPtr;
 static int tickCount = 0;
 
-extern YKQ *MsgQPtr;
-extern struct msg MsgArray[];
+extern YKQ *newPieceQPtr;
+extern struct newPiece newPieceArray[];
 extern int GlobalFlag;
+
+extern unsigned binLHighestRow;
+extern unsigned binRHighestRow;
 
 void resetInterruptHandler()
 {
@@ -201,25 +228,51 @@ void resetInterruptHandler()
 
 void tickInterruptHandler()
 {
-# 52 "interruptHandlers.c"
+
  YKTickHandler();
 }
 
 void keyboardInterruptHandler(void)
 {
-    char c;
-    c = KeyBuffer;
 
-    if(c == 'a') YKEventSet(charEvent, 0x1);
-    else if(c == 'b') YKEventSet(charEvent, 0x2);
-    else if(c == 'c') YKEventSet(charEvent, 0x4);
-    else if(c == 'd') YKEventSet(charEvent, 0x1 | 0x2 | 0x4);
-    else if(c == '1') YKEventSet(numEvent, 0x1);
-    else if(c == '2') YKEventSet(numEvent, 0x2);
-    else if(c == '3') YKEventSet(numEvent, 0x4);
-    else {
-        print("\nKEYPRESS (", 11);
-        printChar(c);
-        print(") IGNORED\n", 10);
-    }
+}
+
+void gameOverInterruptHandler()
+{
+ printString("Game over!!!!\n\n\n\n\n");
+ exit(0);
+}
+
+void newPieceInterruptHandler()
+{
+ static int next = 0;
+
+ newPieceArray[next].id = NewPieceID;
+ newPieceArray[next].orientation = NewPieceOrientation;
+ newPieceArray[next].type = NewPieceType;
+ newPieceArray[next].column = NewPieceColumn;
+
+ if (YKQPost(newPieceQPtr, (void*) &(newPieceArray[next])) == 0)
+  printString("\n*****new piece made queue overflow!!*****\n");
+ else if (++next >= 5)
+  next = 0;
+}
+
+void receivedInterruptHandler()
+{
+
+ YKSemPost(CmdRcvdSemPtr);
+}
+
+
+
+
+
+
+void clearInterruptHandler()
+{
+
+
+ binLHighestRow--;
+ binRHighestRow--;
 }

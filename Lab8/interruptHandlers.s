@@ -7,11 +7,11 @@ L_interruptHandlers_2:
 	DW	0
 	ALIGN	2
 resetInterruptHandler:
-	; >>>>> Line:	14
+	; >>>>> Line:	29
 	; >>>>> { 
 	jmp	L_interruptHandlers_3
 L_interruptHandlers_4:
-	; >>>>> Line:	15
+	; >>>>> Line:	30
 	; >>>>> exit(0); 
 	xor	al, al
 	push	ax
@@ -26,11 +26,11 @@ L_interruptHandlers_3:
 	jmp	L_interruptHandlers_4
 	ALIGN	2
 tickInterruptHandler:
-	; >>>>> Line:	19
+	; >>>>> Line:	34
 	; >>>>> { 
 	jmp	L_interruptHandlers_6
 L_interruptHandlers_7:
-	; >>>>> Line:	52
+	; >>>>> Line:	36
 	; >>>>> YKTickHandler(); 
 	call	YKTickHandler
 	mov	sp, bp
@@ -40,147 +40,174 @@ L_interruptHandlers_6:
 	push	bp
 	mov	bp, sp
 	jmp	L_interruptHandlers_7
-L_interruptHandlers_10:
-	DB	") IGNORED",0xA,0
-L_interruptHandlers_9:
-	DB	0xA,"KEYPRESS (",0
 	ALIGN	2
 keyboardInterruptHandler:
-	; >>>>> Line:	56
+	; >>>>> Line:	40
 	; >>>>> { 
-	jmp	L_interruptHandlers_11
-L_interruptHandlers_12:
-	; >>>>> Line:	58
-	; >>>>> c = KeyBuffer; 
-	mov	al, byte [KeyBuffer]
-	mov	byte [bp-1], al
-	; >>>>> Line:	60
-	; >>>>> if(c == 'a') YKEventSet(charEvent, 0x1); 
-	cmp	byte [bp-1], 97
-	jne	L_interruptHandlers_13
-	; >>>>> Line:	60
-	; >>>>> if(c == 'a') YKEventSet(charEvent, 0x1); 
-	mov	ax, 1
-	push	ax
-	push	word [charEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_14
-L_interruptHandlers_13:
-	; >>>>> Line:	61
-	; >>>>> else if(c == 'b') YKEventSet(charEvent, 0x2); 
-	cmp	byte [bp-1], 98
-	jne	L_interruptHandlers_15
-	; >>>>> Line:	61
-	; >>>>> else if(c == 'b') YKEventSet(charEvent, 0x2); 
-	mov	ax, 2
-	push	ax
-	push	word [charEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_16
-L_interruptHandlers_15:
-	; >>>>> Line:	62
-	; >>>>> else if(c == 'c') YKEventSet(charEvent 
-	cmp	byte [bp-1], 99
-	jne	L_interruptHandlers_17
-	; >>>>> Line:	62
-	; >>>>> else if(c == 'c') YKEventSet(charEvent 
-	mov	ax, 4
-	push	ax
-	push	word [charEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_18
-L_interruptHandlers_17:
-	; >>>>> Line:	63
-	; >>>>> else if(c == 'd') YKEventSet(charEvent, 0x1 | 0x2 | 0x4); 
-	cmp	byte [bp-1], 100
-	jne	L_interruptHandlers_19
-	; >>>>> Line:	63
-	; >>>>> else if(c == 'd') YKEventSet(charEvent, 0x1 | 0x2 | 0x4); 
-	mov	ax, 7
-	push	ax
-	push	word [charEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_20
-L_interruptHandlers_19:
-	; >>>>> Line:	64
-	; >>>>> else if(c == '1') YKEventSet(numEvent, 0x1); 
-	cmp	byte [bp-1], 49
-	jne	L_interruptHandlers_21
-	; >>>>> Line:	64
-	; >>>>> else if(c == '1') YKEventSet(numEvent, 0x1); 
-	mov	ax, 1
-	push	ax
-	push	word [numEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_22
-L_interruptHandlers_21:
-	; >>>>> Line:	65
-	; >>>>> else if(c == '2') YKEventSet(numEvent, 0x2); 
-	cmp	byte [bp-1], 50
-	jne	L_interruptHandlers_23
-	; >>>>> Line:	65
-	; >>>>> else if(c == '2') YKEventSet(numEvent, 0x2); 
-	mov	ax, 2
-	push	ax
-	push	word [numEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_24
-L_interruptHandlers_23:
-	; >>>>> Line:	66
-	; >>>>> else if(c == '3') YKEventSet(numEvent, 0x4); 
-	cmp	byte [bp-1], 51
-	jne	L_interruptHandlers_25
-	; >>>>> Line:	66
-	; >>>>> else if(c == '3') YKEventSet(numEvent, 0x4); 
-	mov	ax, 4
-	push	ax
-	push	word [numEvent]
-	call	YKEventSet
-	add	sp, 4
-	jmp	L_interruptHandlers_26
-L_interruptHandlers_25:
-	; >>>>> Line:	68
-	; >>>>> print("\nKEYPRESS (", 11); 
-	mov	ax, 11
-	push	ax
-	mov	ax, L_interruptHandlers_9
-	push	ax
-	call	print
-	add	sp, 4
-	; >>>>> Line:	69
-	; >>>>> printChar(c); 
-	push	word [bp-1]
-	call	printChar
-	add	sp, 2
-	; >>>>> Line:	70
-	; >>>>> print(") IGNORED\n", 10); 
-	mov	ax, 10
-	push	ax
-	mov	ax, L_interruptHandlers_10
-	push	ax
-	call	print
-	add	sp, 4
-L_interruptHandlers_26:
-L_interruptHandlers_24:
-L_interruptHandlers_22:
-L_interruptHandlers_20:
-L_interruptHandlers_18:
-L_interruptHandlers_16:
-L_interruptHandlers_14:
+	jmp	L_interruptHandlers_9
+L_interruptHandlers_10:
+	; >>>>> Line:	42
+	; >>>>> } 
 	mov	sp, bp
 	pop	bp
 	ret
-L_interruptHandlers_11:
+L_interruptHandlers_9:
 	push	bp
 	mov	bp, sp
-	push	cx
-	jmp	L_interruptHandlers_12
+	jmp	L_interruptHandlers_10
+L_interruptHandlers_12:
+	DB	"Game over!!!!",0xA,0xA,0xA,0xA,0xA,0
+	ALIGN	2
+gameOverInterruptHandler:
+	; >>>>> Line:	45
+	; >>>>> { 
+	jmp	L_interruptHandlers_13
+L_interruptHandlers_14:
+	; >>>>> Line:	46
+	; >>>>> printString("Game over!!!!\n\n\n\n\n"); 
+	mov	ax, L_interruptHandlers_12
+	push	ax
+	call	printString
+	add	sp, 2
+	; >>>>> Line:	47
+	; >>>>> exit(0); 
+	xor	al, al
+	push	ax
+	call	exit
+	add	sp, 2
+	mov	sp, bp
+	pop	bp
+	ret
+L_interruptHandlers_13:
+	push	bp
+	mov	bp, sp
+	jmp	L_interruptHandlers_14
+	ALIGN	2
+L_interruptHandlers_16:
+	DW	0
+L_interruptHandlers_17:
+	DB	0xA,"*****new piece made queue overflow!!*****",0xA,0
+	ALIGN	2
+newPieceInterruptHandler:
+	; >>>>> Line:	51
+	; >>>>> { 
+	jmp	L_interruptHandlers_18
+L_interruptHandlers_19:
+	; >>>>> Line:	54
+	; >>>>> newPieceArray[next].id = NewPieceID; 
+	mov	ax, word [L_interruptHandlers_16]
+	mov	cx, 3
+	shl	ax, cl
+	mov	si, ax
+	add	si, newPieceArray
+	mov	ax, word [NewPieceID]
+	mov	word [si], ax
+	; >>>>> Line:	55
+	; >>>>> newPieceArray[next].orientation = NewPieceOrienta 
+	mov	ax, word [L_interruptHandlers_16]
+	mov	cx, 3
+	shl	ax, cl
+	add	ax, newPieceArray
+	mov	si, ax
+	add	si, 2
+	mov	ax, word [NewPieceOrientation]
+	mov	word [si], ax
+	; >>>>> Line:	56
+	; >>>>> newPieceArray[next].type = NewPieceType; 
+	mov	ax, word [L_interruptHandlers_16]
+	mov	cx, 3
+	shl	ax, cl
+	add	ax, newPieceArray
+	mov	si, ax
+	add	si, 4
+	mov	ax, word [NewPieceType]
+	mov	word [si], ax
+	; >>>>> Line:	57
+	; >>>>> newPieceArray[next].column = NewPieceColumn; 
+	mov	ax, word [L_interruptHandlers_16]
+	mov	cx, 3
+	shl	ax, cl
+	add	ax, newPieceArray
+	mov	si, ax
+	add	si, 6
+	mov	ax, word [NewPieceColumn]
+	mov	word [si], ax
+	; >>>>> Line:	59
+	; >>>>> if (YKQPost(newPieceQPtr, (void*) &(newPieceArray[next])) == 0) 
+	mov	ax, word [L_interruptHandlers_16]
+	mov	cx, 3
+	shl	ax, cl
+	add	ax, newPieceArray
+	push	ax
+	push	word [newPieceQPtr]
+	call	YKQPost
+	add	sp, 4
+	test	ax, ax
+	jne	L_interruptHandlers_20
+	; >>>>> Line:	60
+	; >>>>> printString("\n*****new piece made queue overflow!!*****\n"); 
+	mov	ax, L_interruptHandlers_17
+	push	ax
+	call	printString
+	add	sp, 2
+	jmp	L_interruptHandlers_21
+L_interruptHandlers_20:
+	; >>>>> Line:	61
+	; >>>>> else if (++next >= 5) 
+	mov	ax, word [L_interruptHandlers_16]
+	inc	ax
+	mov	word [L_interruptHandlers_16], ax
+	cmp	ax, 5
+	jl	L_interruptHandlers_22
+	; >>>>> Line:	62
+	; >>>>> next = 0; 
+	mov	word [L_interruptHandlers_16], 0
+L_interruptHandlers_22:
+L_interruptHandlers_21:
+	mov	sp, bp
+	pop	bp
+	ret
+L_interruptHandlers_18:
+	push	bp
+	mov	bp, sp
+	jmp	L_interruptHandlers_19
+	ALIGN	2
+receivedInterruptHandler:
+	; >>>>> Line:	66
+	; >>>>> { 
+	jmp	L_interruptHandlers_24
+L_interruptHandlers_25:
+	; >>>>> Line:	68
+	; >>>>> YKSemPost(CmdRcvdSemPtr); 
+	push	word [CmdRcvdSemPtr]
+	call	YKSemPost
+	add	sp, 2
+	mov	sp, bp
+	pop	bp
+	ret
+L_interruptHandlers_24:
+	push	bp
+	mov	bp, sp
+	jmp	L_interruptHandlers_25
+	ALIGN	2
+clearInterruptHandler:
+	; >>>>> Line:	77
+	; >>>>> { 
+	jmp	L_interruptHandlers_27
+L_interruptHandlers_28:
+	; >>>>> Line:	80
+	; >>>>> binLHighestRow--; 
+	dec	word [binLHighestRow]
+	; >>>>> Line:	81
+	; >>>>> binRHighestRow--; 
+	dec	word [binRHighestRow]
+	mov	sp, bp
+	pop	bp
+	ret
+L_interruptHandlers_27:
+	push	bp
+	mov	bp, sp
+	jmp	L_interruptHandlers_28
 	ALIGN	2
 L_interruptHandlers_1:
 	TIMES	512 db 0

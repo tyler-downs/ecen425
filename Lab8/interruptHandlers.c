@@ -44,12 +44,13 @@ void keyboardInterruptHandler(void)
 void gameOverInterruptHandler()
 {
 	printString("Game over!!!!\n\n\n\n\n");
+	exit(0);
 }
 
 void newPieceInterruptHandler()
 {
 	static int next = 0;
-	printString(" new piece\n");
+	//printString(" new piece\n");
 	newPieceArray[next].id = NewPieceID;
 	newPieceArray[next].orientation = NewPieceOrientation;
 	newPieceArray[next].type = NewPieceType;
@@ -63,7 +64,7 @@ void newPieceInterruptHandler()
 
 void receivedInterruptHandler()
 {
-	printString(" received\n");
+	//printString(" received\n");
 	YKSemPost(CmdRcvdSemPtr);
 }
 /*
@@ -74,7 +75,7 @@ void touchdownInterruptHandler()
 */
 void clearInterruptHandler()
 {
-	printString(" cleared line\n");
+	//printString(" cleared line\n");
 	//update line info
 	binLHighestRow--;
 	binRHighestRow--;

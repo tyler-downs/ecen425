@@ -240,76 +240,82 @@ void PlacementTask()
   //get the piece out of the queue of pieces
   struct newPiece* piecePtr;
   static int i; //for for loops
-  YKEnterMutex();
-  piecePtr = (struct newPiece *) YKQPend(newPieceQPtr);
-  YKExitMutex();
 
-  //set the slides and rotations to 0
-  numSlides = 0;
-  numRotations = 0;
+  while(1)
+  {
+    YKEnterMutex();
+    piecePtr = (struct newPiece *) YKQPend(newPieceQPtr);
+    YKExitMutex();
 
-  //decide what to do with the piece
-  switch (piecePtr->type){
-    case CORNER_PIECE:
-      placeCornerPiece(piecePtr);
-      break;
-    case STRAIGHT_PIECE:
-      //if it's not oriented flat, put it flat
-      if(piecePtr->orientation == VERT)
-      {
-        numRotations++;
-      }
+    //set the slides and rotations to 0
+    numSlides = 0;
+    numRotations = 0;
 
-      if (binLlower)
-      {
-        numSlides -= (piecePtr->column - 1);
-        //update the highest rows data to reflect where this piece will be
-        binLHighestRow ++;
-      }
-      else
-      {
-        numSlides -= (piecePtr->column - 4);
-        //update the highest rows data to reflect where this piece will be
-        binRHighestRow ++;
-      }
-      break;
+    //decide what to do with the piece
+    switch (piecePtr->type){
+      case CORNER_PIECE:
+        placeCornerPiece(piecePtr);
+        break;
+      case STRAIGHT_PIECE:
+        //if it's not oriented flat, put it flat
+        if(piecePtr->orientation == VERT)
+        {
+          numRotations++;
+        }
+
+        if (binLlower)
+        {
+          numSlides -= (piecePtr->column - 1);
+          //update the highest rows data to reflect where this piece will be
+          binLHighestRow ++;
+        }
+        else
+        {
+          numSlides -= (piecePtr->column - 4);
+          //update the highest rows data to reflect where this piece will be
+          binRHighestRow ++;
+        }
+        break;
+    }
+    //determine best order of sequence and send move commands through queue
+    sendMoveCommands(piecePtr);
   }
-
-  //determine best order of sequence and send move commands through queue
-  sendMoveCommands(piecePtr);
 }
 
 void CommunicationTask()
 {
   struct move* movePtr;
-    printString("comm task\n");
-  YKEnterMutex();
-  printString("comm task pending on q\n");
-  movePtr = (struct move *) YKQPend(moveQPtr);
-  printString("comm task got move cmd\n");
-  YKExitMutex();
-  printString("comm task pending on sem\n");
-  YKSemPend(CmdRcvdSemPtr);
-  printString("comm task got sem\n");
-
-  //enter mutex?
-  YKEnterMutex();
-  switch (movePtr->moveType)
+  while (1)
   {
-    case SLIDE:
-     printString("comm task sending slide cmd\n");
-      SlidePiece(movePtr->pieceID, movePtr->direction);
-      printString("comm task sent slide cmd\n");
-      break;
-    case ROTATE:
-     printString("comm task sending rotate cmd\n");
-      RotatePiece(movePtr->pieceID, movePtr->direction);
-      break;
-    default:
-      printString("\n****ILLEGAL MOVE TYPE*****\n");
-      break;
+    //  printString("comm task\n");
+    YKEnterMutex();
+  //  printString("comm task pending on q\n");
+    movePtr = (struct move *) YKQPend(moveQPtr);
+  //  printString("comm task got move cmd\n");
+    YKExitMutex();
+  //  printString("comm task pending on sem\n");
+    YKSemPend(CmdRcvdSemPtr);
+  //  printString("comm task got sem\n");
+
+    //enter mutex?
+    YKEnterMutex();
+    switch (movePtr->moveType)
+    {
+      case SLIDE:
+      // printString("comm task sending slide cmd\n");
+        SlidePiece(movePtr->pieceID, movePtr->direction);
+      //  printString("comm task sent slide cmd\n");
+        break;
+      case ROTATE:
+      // printString("comm task sending rotate cmd\n");
+        RotatePiece(movePtr->pieceID, movePtr->direction);
+        break;
+      default:
+        printString("\n****ILLEGAL MOVE TYPE*****\n");
+        break;
+    }
+    YKExitMutex();
   }
-  YKExitMutex();
 }
 
 void StatTask()
