@@ -178,38 +178,13 @@ simptris_received:
 
 simptris_touchdown:
 		push ax
-		push bx
-		push cx
-		push dx
-		push si
-		push di
-		push bp
-		push es
-		push ds
-
-		call YKEnterISR
-
-		sti 		; enable interrupts
-		call touchdownInterruptHandler
-		cli			; disable interrupts
 
 		; send EOI command to PIC
 		mov	al, 0x20	; Load nonspecific EOI value (0x20) into register al
 		out	0x20, al	; Write EOI to PIC (port 0x20)
 
-		call YKExitISR
-
-		pop ds
-		pop es
-		pop bp
-		pop di
-		pop si
-		pop dx
-		pop cx
-		pop bx
 		pop ax
-
-iret
+		iret
 
 simptris_clear:
 		push ax

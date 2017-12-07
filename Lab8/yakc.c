@@ -54,7 +54,7 @@ void YKIdleTask(void)
 		int tmp;
 		YKEnterMutex();
 		tmp = YKIdleCount + 1;
-		
+
 		YKIdleCount = tmp;
 		YKExitMutex();
 	//	printString("YKIdleCount = ");

@@ -1,9 +1,13 @@
-#define NEWPIECEARRAYSIZE      4
-#define MOVEARRAYSIZE 15
+#define NEWPIECEARRAYSIZE      5
+#define MOVEARRAYSIZE 25
 
 //MOVE TYPES
 #define SLIDE 0
 #define ROTATE 1
+
+//Piece TYPES
+#define STRAIGHT_PIECE 1
+#define CORNER_PIECE 0
 
 //move directions
 #define LEFT 0
