@@ -1,0 +1,18 @@
+****** Lab 8 Report: ECEn 425 Fall 2017 *******
+Tyler Downs, Bond Denhalter
+
+We followed the basic algorithm outlined on the assignment
+webpage. We ran into the following bugs:
+
+1) We weren't checking correctly for if each bin was flat or
+not. This caused pieces to go into the wrong bins.
+
+2) We weren't rotating certain pieces, due to not covering
+all cases.
+
+3) Every time we put a corner piece down, we would increment the 
+height of the bin, even if this corner piece stacked on top of and
+was flush with another corner piece. This caused the program to think
+the bins were higher than they actually were.
+
+Est. Time: 8.5 hours

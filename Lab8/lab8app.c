@@ -12,7 +12,7 @@ int CommunicationTaskStk[TASK_STACK_SIZE];
 int StatTaskStk[TASK_STACK_SIZE];
 
 //Flags used in placing a block
-static unsigned binLlower;  //1 if binL is lower than binR, else 0
+//static unsigned binLlower;  //1 if binL is lower than binR, else 0
 static unsigned binLflat;
 static unsigned binRflat;
 
@@ -39,6 +39,7 @@ static int nextMove = 0;
 
 void sendMoveCmd()
 {
+  //printString("sending Move command\n\r");
   if (YKQPost(moveQPtr, (void*) &(moveArray[nextMove])) == 0)
     printString("\n*****new move made queue overflow!!*****\n");
   else if (++nextMove >= MOVEARRAYSIZE)
@@ -129,12 +130,18 @@ void placeCornerPieceInLeftBin(struct newPiece* piecePtr)
     //put it in orientation 0 (BL) by rotating it
     rotatePieceToBL(piecePtr);
     numSlides -= (piecePtr->column); //move to col 0
+    // printString("Changing binLflat to 0 for piece: ");
+    // printInt(piecePtr->id);
+    // printNewLine();
     binLflat = 0; //binL is now no longer flat
   }
   else //if bin L is not flat, rotate it to TR and place it
   {
     rotatePieceToTR(piecePtr); //get in TR position
     numSlides -= (piecePtr->column - 2); //slide to col 2
+    // printString("Changing binLflat to 1 for piece: ");
+    // printInt(piecePtr->id);
+    // printNewLine();
     binLflat = 1; //bin is now flat
   }
 }
@@ -149,6 +156,11 @@ void placeCornerPieceInRightBin(struct newPiece* piecePtr)
     //determine slide to get to column 3
     numSlides -= (piecePtr->column - 3);
     //binR is now no longer flat
+
+    // printString("Changing binRflat to 0 for piece: ");
+    // printInt(piecePtr->id);
+    // printNewLine();
+    
     binRflat = 0;
   }
   else //if the right bin is not flat
@@ -157,6 +169,11 @@ void placeCornerPieceInRightBin(struct newPiece* piecePtr)
     rotatePieceToTR(piecePtr);
     numSlides -= (piecePtr->column - 5);
     //bin is now flat
+    /*
+    printString("Changing binRflat to 1 for piece: ");
+    printInt(piecePtr->id);
+    printNewLine();
+    */
     binRflat = 1;
   }
 }
@@ -164,18 +181,43 @@ void placeCornerPieceInRightBin(struct newPiece* piecePtr)
 void placeCornerPiece(struct newPiece* piecePtr)
 {
   //determine which bin to put it in
-  if (binLlower)
+  /*
+  printString("binLflat: ");
+  printInt(binLflat);
+  printString(", binRflat: ");
+  printInt(binRflat);
+  printNewLine();
+  */
+  if (binLflat && binRflat)
   {
-    placeCornerPieceInLeftBin(piecePtr);
-    //update the highest rows data to reflect where this piece will be
-    binLHighestRow += 2;
+    if (binLlower)
+    {
+      placeCornerPieceInLeftBin(piecePtr);
+      //update the highest rows data to reflect where this piece will be
+      binLHighestRow += 2;
+    }
+    else //if binR is lower
+    {
+      placeCornerPieceInRightBin(piecePtr);
+      //update the highest rows data to reflect where this piece will be
+      binRHighestRow += 2;
+    }
   }
-  else //if binR is lower
+  else if (binRflat)
   {
-    placeCornerPieceInRightBin(piecePtr);
-    //update the highest rows data to reflect where this piece will be
-    binRHighestRow += 2;
+      placeCornerPieceInLeftBin(piecePtr);
+      //update the highest rows data to reflect where this piece will be
   }
+  else if (binLflat)
+  {
+      placeCornerPieceInRightBin(piecePtr);
+      //update the highest rows data to reflect where this piece will be
+  }
+  else
+  {
+    printString("Neither are flat when placing a corner piece!\n");
+  }
+
 }
 
 void sendRotateCommands(struct newPiece* piecePtr)
@@ -198,22 +240,27 @@ void sendRotateCommands(struct newPiece* piecePtr)
 void sendMoveCommands(struct newPiece* piecePtr)
 {
   int curCol;
+  int dir;
   curCol = piecePtr->column;
+  dir = numSlides;
   while (numSlides != 0)
   {
-    if ((curCol == 1 && numSlides < 0) || (curCol == 4 && numSlides > 0)) //need to rotate before reaching edge
+    if ((curCol == 1 && dir < 0) || (curCol == 4 && dir > 0)) //need to rotate before reaching edge
     {
+      //printString("Special case\n");
       sendRotateCommands(piecePtr);
     }
     //slide one step
     if (numSlides < 0)
     {
       slidePieceLeft(piecePtr->id);
+      curCol--;
       numSlides++; //update the number of slides left to do
     }
     else
     {
       slidePieceRight(piecePtr->id);
+      curCol++;
       numSlides--; //update the number of slides left to do
     }
   }
@@ -231,6 +278,10 @@ void sendMoveCommands(struct newPiece* piecePtr)
       slidePieceLeft(piecePtr->id);
       sendRotateCommands(piecePtr);
       slidePieceRight(piecePtr->id);
+    }
+    else
+    {
+      sendRotateCommands(piecePtr);
     }
   }
 }
@@ -260,21 +311,37 @@ void PlacementTask()
         //if it's not oriented flat, put it flat
         if(piecePtr->orientation == VERT)
         {
+          //printString("numRotations++\n");
           numRotations++;
         }
+        if (binLflat && binRflat)
+        {
+          if (binLlower)
+          {
+            numSlides -= (piecePtr->column - 1);
+            //update the highest rows data to reflect where this piece will be
+            binLHighestRow ++;
+          }
+          else
+          {
+            numSlides -= (piecePtr->column - 4);
+            //update the highest rows data to reflect where this piece will be
+            binRHighestRow ++;
+          }
+        }
+        else if (binLflat)
+        {
+            numSlides -= (piecePtr->column - 1);
+            //update the highest rows data to reflect where this piece will be
+            binLHighestRow ++;
+        }
+        else if (binRflat)
+        {
+            numSlides -= (piecePtr->column - 4);
+            //update the highest rows data to reflect where this piece will be
+            binRHighestRow ++;
+        }
 
-        if (binLlower)
-        {
-          numSlides -= (piecePtr->column - 1);
-          //update the highest rows data to reflect where this piece will be
-          binLHighestRow ++;
-        }
-        else
-        {
-          numSlides -= (piecePtr->column - 4);
-          //update the highest rows data to reflect where this piece will be
-          binRHighestRow ++;
-        }
         break;
     }
     //determine best order of sequence and send move commands through queue
@@ -302,12 +369,23 @@ void CommunicationTask()
     switch (movePtr->moveType)
     {
       case SLIDE:
-      // printString("comm task sending slide cmd\n");
+      /*
+        printString("comm task sending slide cmd -> pieceID: ");
+        printInt(movePtr->pieceID);
+        printString(", dir: ");
+        printInt(movePtr->direction);
+        printNewLine();
+      */
         SlidePiece(movePtr->pieceID, movePtr->direction);
-      //  printString("comm task sent slide cmd\n");
         break;
       case ROTATE:
-      // printString("comm task sending rotate cmd\n");
+      /*
+        printString("comm task sending rotate cmd -> pieceID: ");
+        printInt(movePtr->pieceID);
+        printString(", dir: ");
+        printInt(movePtr->direction);
+        printNewLine();
+      */
         RotatePiece(movePtr->pieceID, movePtr->direction);
         break;
       default:
@@ -371,7 +449,10 @@ int main()
 
   CmdRcvdSemPtr = YKSemCreate(1); //start at 1 so we can send a command right away
 
-  SeedSimptris(0); //TODO set seed
+  SeedSimptris(75301); //TODO set seed
+
+  binRflat = 1;
+  binLflat = 1;
 
   YKRun();
 }
